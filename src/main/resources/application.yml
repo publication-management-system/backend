@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+
+
+driverClassName: org.sqlite.JDBC
+dbUrl: jdbc:sqlite:E:\fac\Dume de programare\db\test-db2
