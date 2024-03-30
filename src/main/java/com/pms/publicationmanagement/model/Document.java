@@ -29,6 +29,8 @@ public class Document {
     private String publisher;
     private String description;
 
+    private String link;
+
 //    @ElementCollection
 //    private List<String> topics;
 
@@ -52,6 +54,29 @@ public class Document {
         this.publisher = publisher;
         this.description = description;
         this.citedIn = citedIn;
+    }
+
+    public Document(Integer id, String title, String publicationDate, List<Author> authors, String issued, String volume, String issue, String pages, String publisher, String description, String link, List<Citation> citedIn) {
+        this.id = id;
+        this.title = title;
+        this.publicationDate = publicationDate;
+        this.authors = authors;
+        this.issued = issued;
+        this.volume = volume;
+        this.issue = issue;
+        this.pages = pages;
+        this.publisher = publisher;
+        this.description = description;
+        this.link = link;
+        this.citedIn = citedIn;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public Document() {
