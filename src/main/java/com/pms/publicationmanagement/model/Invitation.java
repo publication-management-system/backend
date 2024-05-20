@@ -4,8 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Invitation {
 
     @Id
@@ -23,29 +27,5 @@ public class Invitation {
     }
 
     public Invitation() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public Boolean getWasTaken() {
-        return wasTaken;
-    }
-
-    public void setWasTaken(Boolean wasTaken) {
-        this.wasTaken = wasTaken;
     }
 }

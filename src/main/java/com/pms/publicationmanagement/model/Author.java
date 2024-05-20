@@ -24,7 +24,7 @@ public class Author {
 //    private List<String> topics;
 
     @ManyToMany
-    private List<Document> documents;
+    private List<Document> documents = new ArrayList<>();
 
     public Author() {
     }
@@ -82,8 +82,8 @@ public class Author {
         return documents;
     }
 
-    public void setDocuments(List<Document> documents) {
-        this.documents = documents;
+    public void addDocuments(List<Document> documents) {
+        this.documents.addAll(documents);
     }
 
     //    public List<String> getLabels() {

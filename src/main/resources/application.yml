@@ -7,3 +7,9 @@ spring:
 
 driverClassName: org.sqlite.JDBC
 dbUrl: jdbc:sqlite:E:\fac\Dume de programare\db\test-db2
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

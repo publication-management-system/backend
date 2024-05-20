@@ -9,9 +9,6 @@ import com.pms.publicationmanagement.repository.SpringJpaUserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class SessionService {
     private final SpringJpaUserRepository userRepository;
@@ -23,18 +20,17 @@ public class SessionService {
         this.institutionRepository = institutionRepository;
     }
 
+    @Transactional
     public User registerUser(String firstName, String middleName, String lastName, String email,
-                             String password, Integer id, UserType userType,
+                             String password, UserType userType,
                              String institutionName, String address,
                              String phoneNumber, String institutionEmail) {
 
-        User userToBeSaved = new User(firstName, middleName, lastName, email, password, id, userType);
-        Institution institutionToBeSaved = new Institution(null, institutionName, address, phoneNumber, institutionEmail);
-        institutionToBeSaved.getUsers().add(userToBeSaved);
-        userToBeSaved.setInstitution(institutionToBeSaved);
+        User userToBeSaved = userRepository.save(new User(null, firstName, middleName, lastName, email, password, userType));
+        Institution institutionToBeSaved = institutionRepository.save(new Institution(null, institutionName, address, phoneNumber, institutionEmail));
 
-        institutionRepository.save(institutionToBeSaved);
-        return userRepository.save(userToBeSaved);
+        userToBeSaved.setInstitution(institutionToBeSaved);
+        return userToBeSaved;
     }
 
     public User loginUser(String email, String password) {

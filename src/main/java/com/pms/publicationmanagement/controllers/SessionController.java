@@ -4,7 +4,6 @@ import com.pms.publicationmanagement.dto.LoginRequestDto;
 import com.pms.publicationmanagement.dto.RegisterRequestDto;
 import com.pms.publicationmanagement.dto.UserDto;
 import com.pms.publicationmanagement.mapper.UserDtoMapper;
-import com.pms.publicationmanagement.model.Institution;
 import com.pms.publicationmanagement.model.User;
 import com.pms.publicationmanagement.services.InstitutionService;
 import com.pms.publicationmanagement.services.SessionService;
@@ -40,7 +39,7 @@ public class SessionController {
 //                registerRequest.phoneNumber, registerRequest.institutionEmail);
 
         User savedUser = sessionService.registerUser(registerRequest.firstName, registerRequest.middleName, registerRequest.lastName,
-                registerRequest.email, registerRequest.password, registerRequest.id, registerRequest.userType,
+                registerRequest.email, registerRequest.password, registerRequest.userType,
                 registerRequest.institutionName, registerRequest.address, registerRequest.phoneNumber, registerRequest.institutionEmail);
 
 //        savedInstitution.getUsers().add(savedUser);
