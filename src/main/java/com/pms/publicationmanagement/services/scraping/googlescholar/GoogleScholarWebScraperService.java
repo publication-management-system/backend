@@ -10,6 +10,7 @@ import com.pms.publicationmanagement.model.Citation;
 import com.pms.publicationmanagement.model.Document;
 import com.pms.publicationmanagement.repository.SpringJpaAuthorRepository;
 import com.pms.publicationmanagement.repository.SpringJpaDocumentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.pms.publicationmanagement.services.scraping.googlescholar.GoogleScholarLocators.*;
 
 @Service
+@RequiredArgsConstructor
 public class GoogleScholarWebScraperService {
     public static final String CITATIONS_CONTAINER_ID = "#gs_res_ccl_mid"; //se cheama la fel cu rezultatul de la search initial(pt dorel lucanu)
     public static final String CITATION_ROW = "[class=\"gs_r gs_or gs_scl\"]";
@@ -38,12 +40,6 @@ public class GoogleScholarWebScraperService {
     private final SpringJpaAuthorRepository springJpaAuthorRepository;
 
     private final SpringJpaDocumentRepository springJpaDocumentRepository;
-
-    public GoogleScholarWebScraperService(SpringJpaAuthorRepository springJpaAuthorRepository, SpringJpaDocumentRepository springJpaDocumentRepository) {
-        this.springJpaAuthorRepository = springJpaAuthorRepository;
-        this.springJpaDocumentRepository = springJpaDocumentRepository;
-    }
-
     public void scrape(String name) {
         List<String> args = new ArrayList<>();
         args.add("-private");

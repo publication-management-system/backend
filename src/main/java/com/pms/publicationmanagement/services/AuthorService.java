@@ -3,19 +3,16 @@ package com.pms.publicationmanagement.services;
 import com.pms.publicationmanagement.model.Author;
 import com.pms.publicationmanagement.model.Document;
 import com.pms.publicationmanagement.repository.SpringJpaAuthorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AuthorService {
 
     private final SpringJpaAuthorRepository authorRepository;
-
-    public AuthorService(SpringJpaAuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
-    }
-
 
     //bahaos cu id-urile (cateodata sunt la param, cateodata nu)
     public void addAuthor(Integer id, String name, String role, String institution, String institutionMail, List<Document> documents) {

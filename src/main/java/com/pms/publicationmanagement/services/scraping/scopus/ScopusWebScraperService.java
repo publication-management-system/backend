@@ -6,6 +6,7 @@ import com.pms.publicationmanagement.model.Author;
 import com.pms.publicationmanagement.model.Document;
 import com.pms.publicationmanagement.repository.SpringJpaAuthorRepository;
 import com.pms.publicationmanagement.repository.SpringJpaDocumentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.print.Doc;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ScopusWebScraperService {
 
     public static final String SCOPUS_HOME_PAGE = "https://www.scopus.com/home.uri?zone=header&origin=AuthorProfile";
@@ -20,14 +22,10 @@ public class ScopusWebScraperService {
     public static final String AUTHOR_SEARCH_FIRST_RESULT = "#resultDataRow1";
     public static final String DOCUMENTS_CONTAINER_ID = "#documents-panel";
     public static final String PUBLICATION_YEAR_SPAN = "span.Typography-module__lVnit:has(a)";
+
     private final SpringJpaAuthorRepository springJpaAuthorRepository;
 
     private final SpringJpaDocumentRepository springJpaDocumentRepository;
-
-    public ScopusWebScraperService(SpringJpaAuthorRepository springJpaAuthorRepository, SpringJpaDocumentRepository springJpaDocumentRepository) {
-        this.springJpaAuthorRepository = springJpaAuthorRepository;
-        this.springJpaDocumentRepository = springJpaDocumentRepository;
-    }
 
     public void scrape(String lastName, String firstName) {
         List<String> args = new ArrayList<>();

@@ -10,4 +10,6 @@ public interface SpringJpaUserRepository extends JpaRepository<User, Integer> {
     User findByEmailAndPassword(String email, String password);
 
     User findByFirstNameAndMiddleNameAndLastName(String firstName, String middleName, String lastName);
+
+    User findByEmail(String email);
 }

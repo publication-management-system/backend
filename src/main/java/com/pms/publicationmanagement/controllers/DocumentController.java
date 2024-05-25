@@ -22,7 +22,7 @@ public class DocumentController {
     public void addDocument(@RequestBody DocumentDto documentDto) {
         documentService.addDocument(documentDto.id, documentDto.title, documentDto.publicationDate, documentDto.authors,
                 documentDto.issued, documentDto.volume, documentDto.issue, documentDto.pages, documentDto.publisher,
-                documentDto.description, documentDto.citedIn);
+                documentDto.description, documentDto.citedIn, documentDto.link);
     }
 
     @GetMapping("by-title")

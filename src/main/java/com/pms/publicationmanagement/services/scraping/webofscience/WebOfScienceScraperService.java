@@ -7,12 +7,14 @@ import com.pms.publicationmanagement.model.Document;
 import com.pms.publicationmanagement.repository.SpringJpaAuthorRepository;
 import com.pms.publicationmanagement.repository.SpringJpaCitationRepository;
 import com.pms.publicationmanagement.repository.SpringJpaDocumentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WebOfScienceScraperService {
 
     private final SpringJpaAuthorRepository springJpaAuthorRepository;
@@ -20,16 +22,6 @@ public class WebOfScienceScraperService {
     private final SpringJpaDocumentRepository springJpaDocumentRepository;
 
     private  final SpringJpaCitationRepository springJpaCitationRepository;
-
-
-    public WebOfScienceScraperService(SpringJpaAuthorRepository springJpaAuthorRepository,
-                                      SpringJpaDocumentRepository springJpaDocumentRepository,
-                                      SpringJpaCitationRepository springJpaCitationRepository) {
-        this.springJpaAuthorRepository = springJpaAuthorRepository;
-        this.springJpaDocumentRepository = springJpaDocumentRepository;
-        this.springJpaCitationRepository = springJpaCitationRepository;
-    }
-
     public void scrape(String lastName, String firstName) {
         List<String> args = new ArrayList<>();
         args.add("-private");

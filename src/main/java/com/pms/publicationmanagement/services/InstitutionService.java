@@ -2,18 +2,15 @@ package com.pms.publicationmanagement.services;
 
 import com.pms.publicationmanagement.model.Institution;
 import com.pms.publicationmanagement.repository.SpringJpaInstitutionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class InstitutionService {
     private final SpringJpaInstitutionRepository institutionRepository;
-
-    public InstitutionService(SpringJpaInstitutionRepository institutionRepository) {
-        this.institutionRepository = institutionRepository;
-    }
-
     public Institution addInstitution(String name, String address, String phoneNumber, String email) {
         Institution saved = new Institution(null, name, address, phoneNumber, email);
         institutionRepository.save(saved);

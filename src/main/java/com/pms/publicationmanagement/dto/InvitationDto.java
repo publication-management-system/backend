@@ -1,9 +1,12 @@
 package com.pms.publicationmanagement.dto;
 
-public class InvitationDto {
+import jakarta.validation.constraints.NotNull;
 
+public class InvitationDto {
+    @NotNull
     public Integer id;
 
+    @NotNull
     public String link;
 
     public Boolean wasTaken;

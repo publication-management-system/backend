@@ -4,26 +4,23 @@ import com.pms.publicationmanagement.model.Author;
 import com.pms.publicationmanagement.model.Citation;
 import com.pms.publicationmanagement.model.Document;
 import com.pms.publicationmanagement.repository.SpringJpaDocumentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DocumentService {
 
     private final SpringJpaDocumentRepository documentRepository;
-
-    public DocumentService(SpringJpaDocumentRepository documentRepository) {
-        this.documentRepository = documentRepository;
-    }
-
     public void addDocument(Integer id, String title, String publicationDate, List<Author> authors,
-                       String issued, String volume, String issue, String pages, String publisher,
-                       String description, List<Citation> citedIn) {
+                            String issued, String volume, String issue, String pages, String publisher,
+                            String description, List<Citation> citedIn, String link) {
 
         Document saved = new Document(id, title, publicationDate, authors,
                 issued, volume, issue, pages, publisher,
-                description,  citedIn);
+                description, link, citedIn);
 
         documentRepository.save(saved);
     }

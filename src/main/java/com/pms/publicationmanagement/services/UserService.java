@@ -3,19 +3,16 @@ package com.pms.publicationmanagement.services;
 import com.pms.publicationmanagement.model.User;
 import com.pms.publicationmanagement.model.UserType;
 import com.pms.publicationmanagement.repository.SpringJpaUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final SpringJpaUserRepository userRepository;
-
-    public UserService(SpringJpaUserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public void addUser(String firstName, String middleName, String lastName, String email,
                         String password, Integer id, UserType userType) {
         userRepository.save(new User(id, firstName, middleName, lastName, email,

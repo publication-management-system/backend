@@ -4,6 +4,8 @@ import com.pms.publicationmanagement.dto.AddUserDto;
 import com.pms.publicationmanagement.dto.UserDto;
 import com.pms.publicationmanagement.mapper.UserDtoMapper;
 import com.pms.publicationmanagement.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,11 +40,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto getUserById(@PathVariable Integer id) { return UserDtoMapper.toUserDto(userService.findById(id)); }
 
     @GetMapping
     public List<UserDto> findAllUsers() {
         return UserDtoMapper.toUserDtoList(userService.findAllUsers());
     }
-
 }

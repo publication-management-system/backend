@@ -13,3 +13,6 @@ logging:
     org:
       springframework:
         security: DEBUG
+
+security-config:
+  jwt-secret: 'secretulMeu'

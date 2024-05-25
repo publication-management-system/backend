@@ -3,6 +3,8 @@ package com.pms.publicationmanagement.controllers;
 import com.pms.publicationmanagement.dto.AuthorDto;
 import com.pms.publicationmanagement.mapper.AuthorDtoMapper;
 import com.pms.publicationmanagement.services.AuthorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +20,7 @@ public class AuthorController {
     }
 
     @PostMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void addAuthor(@RequestBody AuthorDto authorDto) {
         authorService.addAuthor(authorDto.id, authorDto.name, authorDto.role,
                 authorDto.institution, authorDto.institutionMail, authorDto.documents);

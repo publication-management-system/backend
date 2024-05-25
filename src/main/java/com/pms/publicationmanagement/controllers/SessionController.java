@@ -1,12 +1,14 @@
 package com.pms.publicationmanagement.controllers;
 
 import com.pms.publicationmanagement.dto.LoginRequestDto;
+import com.pms.publicationmanagement.dto.LoginResponseDto;
 import com.pms.publicationmanagement.dto.RegisterRequestDto;
 import com.pms.publicationmanagement.dto.UserDto;
 import com.pms.publicationmanagement.mapper.UserDtoMapper;
 import com.pms.publicationmanagement.model.User;
 import com.pms.publicationmanagement.services.InstitutionService;
 import com.pms.publicationmanagement.services.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,23 +28,19 @@ public class SessionController {
     }
 
     @PostMapping("/login")
-    public UserDto login(@RequestBody LoginRequestDto loginRequest) {
-        User loggedIn = sessionService.loginUser(loginRequest.email, loginRequest.password);
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequest) {
+        String accessToken = sessionService.loginUser(loginRequest.email, loginRequest.password);
 
-        return UserDtoMapper.toUserDto(loggedIn);
+        return new LoginResponseDto(accessToken);
     }
 
     @PostMapping("/register")
     public UserDto register(@RequestBody RegisterRequestDto registerRequest) {
 
-//        Institution savedInstitution = institutionService.addInstitution(registerRequest.institutionName, registerRequest.address,
-//                registerRequest.phoneNumber, registerRequest.institutionEmail);
-
         User savedUser = sessionService.registerUser(registerRequest.firstName, registerRequest.middleName, registerRequest.lastName,
                 registerRequest.email, registerRequest.password, registerRequest.userType,
                 registerRequest.institutionName, registerRequest.address, registerRequest.phoneNumber, registerRequest.institutionEmail);
 
-//        savedInstitution.getUsers().add(savedUser);
 
 
         return UserDtoMapper.toUserDto(savedUser);

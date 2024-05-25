@@ -9,6 +9,7 @@ import com.pms.publicationmanagement.repository.SpringJpaDocumentRepository;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DblpWebScraperService {
 
     public static final String DBLP_HOME_URL = "https://dblp.org/";
@@ -32,12 +34,6 @@ public class DblpWebScraperService {
     private final SpringJpaDocumentRepository springJpaDocumentRepository;
 
     private final SpringJpaAuthorRepository springJpaAuthorRepository;
-
-    public DblpWebScraperService(SpringJpaDocumentRepository springJpaDocumentRepository, SpringJpaAuthorRepository springJpaAuthorRepository) {
-        this.springJpaDocumentRepository = springJpaDocumentRepository;
-        this.springJpaAuthorRepository = springJpaAuthorRepository;
-    }
-
     public void scrape(String name){
 
         List<String> args = new ArrayList<>();

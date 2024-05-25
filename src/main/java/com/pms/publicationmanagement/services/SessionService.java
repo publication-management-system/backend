@@ -6,19 +6,22 @@ import com.pms.publicationmanagement.model.User;
 import com.pms.publicationmanagement.model.UserType;
 import com.pms.publicationmanagement.repository.SpringJpaInstitutionRepository;
 import com.pms.publicationmanagement.repository.SpringJpaUserRepository;
+import com.pms.publicationmanagement.services.encryption.EncryptionService;
+import com.pms.publicationmanagement.services.tokens.TokenService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SessionService {
     private final SpringJpaUserRepository userRepository;
 
     private final SpringJpaInstitutionRepository institutionRepository;
 
-    public SessionService(SpringJpaUserRepository userRepository, SpringJpaInstitutionRepository institutionRepository) {
-        this.userRepository = userRepository;
-        this.institutionRepository = institutionRepository;
-    }
+    private final EncryptionService encryptionService;
+
+    private final TokenService tokenService;
 
     @Transactional
     public User registerUser(String firstName, String middleName, String lastName, String email,
@@ -26,24 +29,27 @@ public class SessionService {
                              String institutionName, String address,
                              String phoneNumber, String institutionEmail) {
 
-        User userToBeSaved = userRepository.save(new User(null, firstName, middleName, lastName, email, password, userType));
+        User userToBeSaved = userRepository.save(
+                new User(null, firstName, middleName, lastName, email, encryptionService.encryptPassword(password), userType)
+        );
         Institution institutionToBeSaved = institutionRepository.save(new Institution(null, institutionName, address, phoneNumber, institutionEmail));
 
         userToBeSaved.setInstitution(institutionToBeSaved);
         return userToBeSaved;
     }
 
-    public User loginUser(String email, String password) {
-        User user = userRepository.findByEmailAndPassword(email, password);
+    public String loginUser(String email, String password) {
+        User user = userRepository.findByEmail(email);
 
         if(user == null) {
             throw new RuntimeException("User not found");
         }
 
-        System.out.println(String.format("%s has been logged in\n", user.getName()));
+        if (!encryptionService.isSamePassword(password, user.getPassword())) {
+            throw new RuntimeException("Incorrect password");
+        }
 
-        return user;
-
+        return tokenService.generateToken(user);
     }
 
 }
