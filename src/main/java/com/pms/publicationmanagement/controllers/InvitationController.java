@@ -4,6 +4,8 @@ import com.pms.publicationmanagement.dto.AddInvitationDto;
 import com.pms.publicationmanagement.dto.InvitationDto;
 import com.pms.publicationmanagement.mapper.InvitationDtoMapper;
 import com.pms.publicationmanagement.services.InvitationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,21 +22,25 @@ public class InvitationController {
     }
 
     @PostMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void AddInvitation(@RequestBody AddInvitationDto addInvitationDto) {
         invitationService.addInvitattion(addInvitationDto.link);
     }
 
     @GetMapping("/available")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<InvitationDto> findAvailableInvitations(@RequestParam Boolean wasTaken) {
         return InvitationDtoMapper.toInvitationDtoList(invitationService.findAvailable(wasTaken));
     }
 
     @GetMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<InvitationDto> findAll() {
         return InvitationDtoMapper.toInvitationDtoList(invitationService.findAll());
     }
 
     @DeleteMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void deleteInvitation(@RequestParam Integer id) {
         invitationService.deleteInvitation(id);
     }

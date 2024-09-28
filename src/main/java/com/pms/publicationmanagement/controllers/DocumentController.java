@@ -4,6 +4,8 @@ import com.pms.publicationmanagement.dto.DocumentDto;
 import com.pms.publicationmanagement.mapper.DocumentDtoMapper;
 import com.pms.publicationmanagement.model.Author;
 import com.pms.publicationmanagement.services.DocumentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public class DocumentController {
     }
 
     @PostMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void addDocument(@RequestBody DocumentDto documentDto) {
         documentService.addDocument(documentDto.id, documentDto.title, documentDto.publicationDate, documentDto.authors,
                 documentDto.issued, documentDto.volume, documentDto.issue, documentDto.pages, documentDto.publisher,
@@ -26,36 +29,43 @@ public class DocumentController {
     }
 
     @GetMapping("by-title")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByTitle(@RequestParam String title) {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getByTitle(title));
     }
 
     @GetMapping("by-publication-date")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByPublicationDate(@RequestParam String publicationDate) {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getByPublicationDate(publicationDate));
     }
 
     @GetMapping("by-authors")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByAuthors(List<Author> authors) {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getByAuthors(authors));
     }
 
     @GetMapping("by-issued")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByIssued(String issued) {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getByIssued(issued));
     }
 
     @GetMapping("by-publisher")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByPublisher(String publisher) {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getByPublisher(publisher));
     }
 
     @GetMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getAllDocuments() {
         return DocumentDtoMapper.toDocumentDtoList(documentService.getAll());
     }
 
     @DeleteMapping("/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void removeDocumentById(@PathVariable Integer id) {
         documentService.removeAuthor(id);
     }

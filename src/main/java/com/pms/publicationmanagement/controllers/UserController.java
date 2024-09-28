@@ -26,15 +26,18 @@ public class UserController {
     public UserController(UserService userService) { this.userService = userService; }
 
     @PostMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void addUser(@RequestBody AddUserDto addUserDto) {
         userService.addUser(addUserDto.firstName, addUserDto.middleName, addUserDto.lastName, addUserDto.email,
                 addUserDto.password, addUserDto.id, addUserDto.userType);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void removeUserById(@PathVariable Integer id) { userService.removeUser(id); }
 
     @GetMapping("/by-name")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto searchUserByName(@RequestParam String firstName, @RequestParam String middleName, @RequestParam String lastName) {
         return UserDtoMapper.toUserDto(userService.searchUserByName(firstName, middleName, lastName));
     }
@@ -44,6 +47,7 @@ public class UserController {
     public UserDto getUserById(@PathVariable Integer id) { return UserDtoMapper.toUserDto(userService.findById(id)); }
 
     @GetMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<UserDto> findAllUsers() {
         return UserDtoMapper.toUserDtoList(userService.findAllUsers());
     }
