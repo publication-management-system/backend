@@ -2,7 +2,7 @@ package com.pms.publicationmanagement.mapper;
 
 
 import com.pms.publicationmanagement.dto.CitationDto;
-import com.pms.publicationmanagement.model.Citation;
+import com.pms.publicationmanagement.model.profiling.Citation;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,7 +3,7 @@ package com.pms.publicationmanagement.controllers;
 import com.pms.publicationmanagement.dto.AddInstitutionDto;
 import com.pms.publicationmanagement.dto.InstitutionDto;
 import com.pms.publicationmanagement.mapper.InstitutionDtoMapper;
-import com.pms.publicationmanagement.services.InstitutionService;
+import com.pms.publicationmanagement.service.institution.InstitutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/institutions")
+@RequestMapping("/api/institutions")
 public class InstitutionController {
 
     private final InstitutionService institutionService;
@@ -23,7 +23,8 @@ public class InstitutionController {
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void addInstitution(@RequestBody AddInstitutionDto addInstitutionDto) {
-        institutionService.addInstitution(addInstitutionDto.name, addInstitutionDto.address, addInstitutionDto.phoneNumber, addInstitutionDto.email);
+        institutionService.addInstitution(addInstitutionDto.name, addInstitutionDto.address,
+                addInstitutionDto.phoneNumber, addInstitutionDto.email);
 
     }
 

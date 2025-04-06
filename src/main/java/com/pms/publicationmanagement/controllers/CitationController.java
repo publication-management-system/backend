@@ -2,15 +2,16 @@ package com.pms.publicationmanagement.controllers;
 
 import com.pms.publicationmanagement.dto.CitationDto;
 import com.pms.publicationmanagement.mapper.CitationDtoMapper;
-import com.pms.publicationmanagement.services.CitationService;
+import com.pms.publicationmanagement.service.profiling.CitationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/citations")
+@RequestMapping("/api/citations")
 public class CitationController {
 
     private final CitationService citationService;
@@ -27,7 +28,7 @@ public class CitationController {
 
     @DeleteMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void deleteCitation(@PathVariable Integer id) {
+    public void deleteCitation(@PathVariable UUID id) {
         citationService.deleteCitation(id);
     }
 

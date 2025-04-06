@@ -2,7 +2,7 @@ package com.pms.publicationmanagement.mapper;
 
 
 import com.pms.publicationmanagement.dto.UserDto;
-import com.pms.publicationmanagement.model.User;
+import com.pms.publicationmanagement.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,13 @@ public class UserDtoMapper {
 
     public static UserDto toUserDto(User user){
         UserDto dto = new UserDto();
+        dto.id = user.getId();
         dto.firstName = user.getFirstName();
         dto.middleName = user.getMiddleName();
         dto.lastName = user.getLastName();
-        dto.id = user.getId();
-        dto.userType = user.getUserType();
+        dto.userRole = user.getUserRole();
+        dto.imageUrl = user.getImageUrl();
+        dto.email = user.getEmail();
 
         return dto;
     }

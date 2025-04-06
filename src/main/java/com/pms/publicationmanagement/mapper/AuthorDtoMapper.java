@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.mapper;
 
 import com.pms.publicationmanagement.dto.AuthorDto;
-import com.pms.publicationmanagement.model.Author;
+import com.pms.publicationmanagement.model.profiling.Author;
 
 import java.util.ArrayList;
 import java.util.List;

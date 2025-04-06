@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,8 +16,8 @@ import lombok.Setter;
 @Setter
 public class ScrapingSession {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotNull
     private Long userId;
@@ -27,6 +29,5 @@ public class ScrapingSession {
 
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
-    private ScrapingSessionStatus status;
+    private String status;
 }

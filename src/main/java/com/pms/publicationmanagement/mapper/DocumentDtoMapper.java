@@ -1,9 +1,8 @@
 package com.pms.publicationmanagement.mapper;
 
 import com.pms.publicationmanagement.dto.DocumentDto;
-import com.pms.publicationmanagement.model.Document;
+import com.pms.publicationmanagement.model.profiling.Document;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 

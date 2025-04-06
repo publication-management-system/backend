@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.mapper;
 
 import com.pms.publicationmanagement.dto.InvitationDto;
-import com.pms.publicationmanagement.model.Invitation;
+import com.pms.publicationmanagement.model.user.Invitation;
 
 import java.util.ArrayList;
 import java.util.List;

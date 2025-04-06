@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.config.security;
 
-import com.pms.publicationmanagement.model.UserTokenDetails;
-import com.pms.publicationmanagement.services.tokens.TokenService;
+import com.pms.publicationmanagement.model.user.UserTokenDetails;
+import com.pms.publicationmanagement.service.tokens.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -49,6 +50,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 new SimpleGrantedAuthority(principal.getRole().name())
         );
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

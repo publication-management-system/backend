@@ -1,13 +1,10 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.dto.LoginRequestDto;
-import com.pms.publicationmanagement.dto.LoginResponseDto;
-import com.pms.publicationmanagement.dto.RegisterRequestDto;
-import com.pms.publicationmanagement.dto.UserDto;
-import com.pms.publicationmanagement.mapper.UserDtoMapper;
-import com.pms.publicationmanagement.model.User;
-import com.pms.publicationmanagement.services.InstitutionService;
-import com.pms.publicationmanagement.services.SessionService;
+import com.pms.publicationmanagement.dto.session.LoginRequestDto;
+import com.pms.publicationmanagement.dto.session.LoginResponseDto;
+import com.pms.publicationmanagement.dto.session.RegisterRequestDto;
+import com.pms.publicationmanagement.dto.session.RegisterResponseDto;
+import com.pms.publicationmanagement.service.profiling.SessionService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,11 +17,8 @@ public class SessionController {
 
     private final SessionService sessionService;
 
-    private final InstitutionService institutionService;
-
-    public SessionController(SessionService sessionService, InstitutionService institutionService) {
+    public SessionController(SessionService sessionService) {
         this.sessionService = sessionService;
-        this.institutionService = institutionService;
     }
 
     @PostMapping("/login")
@@ -35,15 +29,9 @@ public class SessionController {
     }
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody RegisterRequestDto registerRequest) {
+    public RegisterResponseDto register(@RequestBody RegisterRequestDto registerRequest) {
 
-        User savedUser = sessionService.registerUser(registerRequest.firstName, registerRequest.middleName, registerRequest.lastName,
-                registerRequest.email, registerRequest.password, registerRequest.userType,
-                registerRequest.institutionName, registerRequest.address, registerRequest.phoneNumber, registerRequest.institutionEmail);
-
-
-
-        return UserDtoMapper.toUserDto(savedUser);
+        return sessionService.registerUser(registerRequest);
     }
 
 }

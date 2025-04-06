@@ -1,43 +1,30 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.services.scraping.dblp.DblpWebScraperService;
-import com.pms.publicationmanagement.services.scraping.googlescholar.GoogleScholarWebScraperService;
-import com.pms.publicationmanagement.services.scraping.scopus.ScopusWebScraperService;
-import com.pms.publicationmanagement.services.scraping.webofscience.WebOfScienceScraperService;
+import com.pms.publicationmanagement.dto.ScrapingRequestDto;
+import com.pms.publicationmanagement.service.scraping.WebScrapingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/web-scraping")
+@RequestMapping("/api/web-scraping")
+@RequiredArgsConstructor
+@Slf4j
 public class WebScrapingController {
 
-    private final GoogleScholarWebScraperService webScraper;
+    private final WebScrapingService webScrapingService;
 
-    private final DblpWebScraperService dblpWebScraper;
-
-    private final WebOfScienceScraperService webOfScienceWebScrapper;
-
-    private final ScopusWebScraperService scopusWebScraper;
-
-    public WebScrapingController(GoogleScholarWebScraperService webScraper, DblpWebScraperService dblpWebScraper,
-                                 WebOfScienceScraperService webOfScienceWebScrapper, ScopusWebScraperService scopusWebScraper) {
-        this.webScraper = webScraper;
-        this.dblpWebScraper = dblpWebScraper;
-        this.webOfScienceWebScrapper = webOfScienceWebScrapper;
-        this.scopusWebScraper = scopusWebScraper;
+    @PostMapping
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public UUID scrapeRequest(@RequestBody ScrapingRequestDto requestDto) {
+        log.info("Started scraping request {}", requestDto);
+        return webScrapingService.runScraping(requestDto);
     }
-
-    @PostMapping("/google-scholar")
-    public String scrapeGoogleScholar(@RequestParam String name) {
-//        webScraper.scrape(name);
-//        dblpWebScraper.scrape(name);
-        String nameCopy = name;
-        String names[] = nameCopy.split(" ");
-        webOfScienceWebScrapper.scrape(names[0], names[1]);
-//        scopusWebScraper.scrape(names[0], names[1]);
-        return "OK";
-    }
-
 }

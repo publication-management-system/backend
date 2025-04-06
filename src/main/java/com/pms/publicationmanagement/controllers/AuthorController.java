@@ -2,15 +2,16 @@ package com.pms.publicationmanagement.controllers;
 
 import com.pms.publicationmanagement.dto.AuthorDto;
 import com.pms.publicationmanagement.mapper.AuthorDtoMapper;
-import com.pms.publicationmanagement.services.AuthorService;
+import com.pms.publicationmanagement.service.profiling.AuthorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/authors")
+@RequestMapping("/api/authors")
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -53,7 +54,7 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void removeAuthorById(@PathVariable Integer id) {
+    public void removeAuthorById(@PathVariable UUID id) {
         authorService.removeAuthor(id);
     }
 

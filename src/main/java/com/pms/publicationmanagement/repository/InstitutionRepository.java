@@ -1,56 +1,19 @@
 package com.pms.publicationmanagement.repository;
 
-import com.pms.publicationmanagement.model.Institution;
+import com.pms.publicationmanagement.model.user.Institution;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.UUID;
 
 @Repository
-public class InstitutionRepository {
+public interface InstitutionRepository extends JpaRepository<Institution, UUID> {
 
-    private final List<Institution> institutions;
+    Institution findByNameAndAddress(String name, String address);
 
-    public InstitutionRepository() { institutions = new ArrayList<>(); }
+    Institution findByPhoneNumber(String phoneNumber);
 
-    public void save(Institution institution) { institutions.add(institution); }
+    Institution findByEmail(String email);
 
-    public Institution findByNameAndAddress(String name, String address) {
-        for(Institution institution : institutions) {
-            if(institution.getName().equals(name) && institution.getAddress().equals(address)){
-                return institution;
-            }
-        }
-        return null;
-    }
-
-    public Institution findByPhoneNumber(String phoneNumber) {
-        for(Institution institution : institutions) {
-            if(institution.getPhoneNumber().equals(phoneNumber)){
-                return institution;
-            }
-        }
-        return null;
-    }
-
-    public Institution findByEmail(String email) {
-        for(Institution institution : institutions) {
-            if(institution.getEmail().equals(email)) {
-                return institution;
-            }
-        }
-        return null;
-    }
-
-    public void deleteByNameAndAddress(String name, String address) {
-        for(Institution institution : institutions) {
-            if(institution.getName().equals(name) && institution.getAddress().equals(address)){
-                institutions.remove(institution);
-                break;
-            }
-        }
-    }
-
-    public List<Institution> findAll() { return institutions; }
+    void deleteByNameAndAddress(String name, String address);
 }

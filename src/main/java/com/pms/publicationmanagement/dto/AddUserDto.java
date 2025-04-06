@@ -1,6 +1,8 @@
 package com.pms.publicationmanagement.dto;
 
-import com.pms.publicationmanagement.model.UserType;
+import com.pms.publicationmanagement.model.user.UserRole;
+
+import java.util.UUID;
 
 public class AddUserDto {
 
@@ -14,19 +16,19 @@ public class AddUserDto {
 
     public String password;
 
-    public Integer id;
+    public UUID id;
 
-    public UserType userType;
+    public UserRole userRole;
 
     public AddUserDto(String firstName, String middleName, String lastName, String email, String password,
-                      Integer id, UserType userType) {
+                      UUID id, UserRole userRole) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.id = id;
-        this.userType = userType;
+        this.userRole = userRole;
     }
 
     public AddUserDto() {

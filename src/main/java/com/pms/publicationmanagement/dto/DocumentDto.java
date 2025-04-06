@@ -1,12 +1,13 @@
 package com.pms.publicationmanagement.dto;
 
-import com.pms.publicationmanagement.model.Author;
-import com.pms.publicationmanagement.model.Citation;
+import com.pms.publicationmanagement.model.profiling.Author;
+import com.pms.publicationmanagement.model.profiling.Citation;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DocumentDto {
-    public Integer id;
+    public UUID id;
     public String title;
     public String publicationDate;
     public List<Author> authors;

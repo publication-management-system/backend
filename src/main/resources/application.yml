@@ -13,7 +13,16 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: TRACE
 
 security-config:
   jwt-secret: 'secretulMeu'
+
+scraping-config:
+  show-browser: true
+  browser-args: '--private'
+
+resource-config:
+  upload-resource-path: E:\fac\licenta\resources
+  profile-image-prefix: \profile
+  base-url: http://localhost:8080

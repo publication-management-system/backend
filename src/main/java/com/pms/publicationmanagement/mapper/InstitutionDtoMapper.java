@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.mapper;
 
 import com.pms.publicationmanagement.dto.InstitutionDto;
-import com.pms.publicationmanagement.model.Institution;
+import com.pms.publicationmanagement.model.user.Institution;
 
 import java.util.ArrayList;
 import java.util.List;

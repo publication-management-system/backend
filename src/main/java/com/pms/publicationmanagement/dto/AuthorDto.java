@@ -1,12 +1,16 @@
 package com.pms.publicationmanagement.dto;
 
-import com.pms.publicationmanagement.model.Document;
+import com.pms.publicationmanagement.model.profiling.Document;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthorDto {
-
-    public Integer id;
+    public UUID id;
 
     public String name;
 
@@ -17,16 +21,4 @@ public class AuthorDto {
     public String institutionMail;
 
     public List<Document> documents;
-
-    public AuthorDto() {
-    }
-
-    public AuthorDto(Integer id, String name, String role, String institution, String institutionMail, List<Document> documents) {
-        this.id = id;
-        this.name = name;
-        this.role = role;
-        this.institution = institution;
-        this.institutionMail = institutionMail;
-        this.documents = documents;
-    }
 }
