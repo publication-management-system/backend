@@ -1,12 +1,16 @@
 package com.pms.publicationmanagement.service.user;
 
+import com.pms.publicationmanagement.dto.AcceptInvitationDto;
 import com.pms.publicationmanagement.dto.UpdatePasswordDto;
 import com.pms.publicationmanagement.dto.UserDto;
 import com.pms.publicationmanagement.dto.session.RegisterRequestDto;
 import com.pms.publicationmanagement.dto.user.UpdateNameDto;
 import com.pms.publicationmanagement.mapper.UserDtoMapper;
+import com.pms.publicationmanagement.model.user.Invitation;
 import com.pms.publicationmanagement.model.user.User;
 import com.pms.publicationmanagement.model.user.UserRole;
+import com.pms.publicationmanagement.repository.InstitutionRepository;
+import com.pms.publicationmanagement.repository.InvitationRepository;
 import com.pms.publicationmanagement.repository.UserRepository;
 import com.pms.publicationmanagement.service.encryption.EncryptionService;
 import com.pms.publicationmanagement.service.resource.ResourceService;
@@ -28,9 +32,15 @@ public class UserService {
     private String imageBaseUrl;
 
     private final UserRepository userRepository;
+    private final InstitutionRepository institutionService;
     private final EncryptionService encryptionService;
+    private final InvitationRepository invitationRepository;
 
     private final ResourceService resourceService;
+
+    public List<User> findUsersFromInstitution(UUID institutionId) {
+        return userRepository.findAllByInstitutionId(institutionId);
+    }
 
     public User registerNewUser(RegisterRequestDto registerRequestDto) {
         User userToBeRegistered = new User();
@@ -74,6 +84,24 @@ public class UserService {
         }
 
         return user;
+
+    }
+
+    public User acceptInvitation(AcceptInvitationDto acceptInvitationDto) {
+        Invitation invitation = invitationRepository.findInvitationById(acceptInvitationDto.invitationId).orElseThrow(() ->
+                new RuntimeException("Institution not found"));
+        User toBeInvited = new User();
+
+        toBeInvited.setEmail(acceptInvitationDto.email);
+        toBeInvited.setFirstName(acceptInvitationDto.firstName);
+        toBeInvited.setMiddleName(acceptInvitationDto.middleName);
+        toBeInvited.setLastName(acceptInvitationDto.lastName);
+        toBeInvited.setPassword(encryptionService.encryptPassword(acceptInvitationDto.password));
+        toBeInvited.setInstitution(institutionService.findById(UUID.fromString(invitation.getInstitutionId())).orElseThrow(
+                () -> new RuntimeException("Institution not found")
+        ));
+
+        return userRepository.save(toBeInvited);
 
     }
 

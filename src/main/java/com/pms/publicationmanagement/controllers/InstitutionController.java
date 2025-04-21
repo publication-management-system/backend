@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/institutions")
@@ -58,5 +59,9 @@ public class InstitutionController {
         institutionService.deleteByNameAndAddress(name, address);
     }
 
-
+    @GetMapping("/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public InstitutionDto getById(@PathVariable UUID id) {
+        return InstitutionDtoMapper.toInstitutionDto(institutionService.findById(id));
+    }
 }

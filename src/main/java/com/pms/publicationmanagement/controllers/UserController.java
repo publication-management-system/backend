@@ -1,5 +1,6 @@
 package com.pms.publicationmanagement.controllers;
 
+import com.pms.publicationmanagement.dto.AcceptInvitationDto;
 import com.pms.publicationmanagement.dto.AddUserDto;
 import com.pms.publicationmanagement.dto.UpdatePasswordDto;
 import com.pms.publicationmanagement.dto.UserDto;
@@ -37,11 +38,17 @@ public class UserController {
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto searchUserByName(@RequestParam String firstName, @RequestParam String middleName, @RequestParam String lastName) {
         return UserDtoMapper.toUserDto(userService.searchUserByName(firstName, middleName, lastName));
-    }  
+    }
 
     @GetMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto getUserById(@PathVariable UUID id) { return UserDtoMapper.toUserDto(userService.findById(id)); }
+
+    @PostMapping("/invite-user")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public UserDto acceptInvitation(@RequestBody AcceptInvitationDto acceptInvitationDto) {
+        return UserDtoMapper.toUserDto(userService.acceptInvitation(acceptInvitationDto));
+    }
 
     @GetMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
@@ -65,5 +72,11 @@ public class UserController {
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto uploadProfileImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         return userService.updateProfileImage(id, file);
+    }
+
+    @GetMapping("/institution/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public List<UserDto> findUsersFromInstitution(@PathVariable UUID id) {
+        return UserDtoMapper.toUserDtoList(userService.findUsersFromInstitution(id));
     }
 }

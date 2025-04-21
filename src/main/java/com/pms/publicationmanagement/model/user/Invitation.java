@@ -1,9 +1,6 @@
 package com.pms.publicationmanagement.model.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +20,9 @@ public class Invitation {
 
     private String link;
 
-    private Boolean wasTaken;
+    private String email;
+
+    private String institutionId;
+
+    private boolean wasTaken;
 }

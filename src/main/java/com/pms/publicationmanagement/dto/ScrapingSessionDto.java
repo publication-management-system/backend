@@ -1,6 +1,8 @@
-package com.pms.publicationmanagement.model.scraping;
+package com.pms.publicationmanagement.dto;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,25 +11,15 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class ScrapingSession {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+@AllArgsConstructor
+@NoArgsConstructor
+public class ScrapingSessionDto {
     private UUID id;
-
-    @NotNull
     private String userId;
-
-    @NotNull
     private String institutionId;
-
     private String firstName;
-
     private String lastName;
-
     private String status;
 }

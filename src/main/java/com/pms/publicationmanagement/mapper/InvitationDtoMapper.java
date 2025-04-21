@@ -15,7 +15,7 @@ public class InvitationDtoMapper {
         InvitationDto invitationDto = new InvitationDto();
         invitationDto.id = invitation.getId();
         invitationDto.link = invitation.getLink();
-        invitationDto.wasTaken = invitation.getWasTaken();
+        invitationDto.wasTaken = invitation.isWasTaken();
         return invitationDto;
     }
 

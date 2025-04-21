@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -74,4 +75,14 @@ public class InstitutionService {
         institutionRepository.deleteByNameAndAddress(name, address);
     }
 
+    public Institution findById(UUID id) {
+        Institution institution = institutionRepository.findById(id).orElse(null);
+
+        if(institution == null) {
+            throw new RuntimeException("User with id not found");
+        }
+
+        return institution;
+
+    }
 }

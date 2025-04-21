@@ -1,7 +1,9 @@
 package com.pms.publicationmanagement.service.user;
 
+import com.pms.publicationmanagement.dto.AddInvitationDto;
 import com.pms.publicationmanagement.model.user.Invitation;
 import com.pms.publicationmanagement.repository.InvitationRepository;
+import com.pms.publicationmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,14 @@ public class InvitationService {
 
     private final InvitationRepository invitationRepository;
 
-    public void sendInvitation(String link) {
+    private final UserRepository userRepository;
+
+    public void sendInvitation(AddInvitationDto addInvitationDto) {
         Invitation invitation = new Invitation();
-        invitation.setLink(link);
-        invitation.setWasTaken(false);
+        invitation.setId(UUID.randomUUID());
+        invitation.setEmail(addInvitationDto.email);
+        invitation.setInstitutionId(addInvitationDto.institutionId);
+        invitation.setLink("http://localhost:5173/invitation/" + invitation.getId());
 
         invitationRepository.save(invitation);
     }

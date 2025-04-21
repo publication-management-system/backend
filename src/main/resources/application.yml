@@ -23,6 +23,6 @@ scraping-config:
   browser-args: '--private'
 
 resource-config:
-  upload-resource-path: E:\fac\licenta\resources
+  upload-resource-path: E:\fac\licenta\LicentaGit\backend\resources
   profile-image-prefix: \profile
   base-url: http://localhost:8080
