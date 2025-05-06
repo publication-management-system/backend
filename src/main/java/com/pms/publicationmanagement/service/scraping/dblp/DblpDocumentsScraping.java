@@ -21,22 +21,27 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-import static com.pms.publicationmanagement.service.scraping.dblp.DblpWebScraperService.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DblpDocumentsScraping implements IWebScrapingStep {
+    public static final String DBLP_HOME_URL = "https://dblp.org/";
+    public static final String DBLP_SEARCH_INPUT = "#completesearch-form";
+    public static final String DBLP_AUTHOR_SEARCH_RESULT = "#completesearch-authors";
+    public static final String EXACT_MATCH_RESULT_LIST = "[class = \"result-list\"]";
+    public static final String AUTHOR_PUBL_SECTION = "#publ-section";
+    public static final String PUBL_LIST = "[class=\"publ-list\"]";
 
     private final ScrapedEntityRepository scrapedEntityRepository;
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient webClient;
 
     @Override
     public void scrapeEntity(Page page, ScrapingSession scrapingSession, UUID parentId) {
-
         String nameToBeSearched = scrapingSession.getFirstName() + " " + scrapingSession.getLastName();
 
         page.navigate(DBLP_HOME_URL);
@@ -66,14 +71,6 @@ public class DblpDocumentsScraping implements IWebScrapingStep {
                 Document publication = new Document();
 
                 if (docDetails.getArticle() != null) {
-
-//                    List<Author> listOfSavedAuthors = new ArrayList<>();
-//                    for (String authorName : docDetails.getArticle().author) {
-//                        Author author = new Author();
-//                        author.setName(authorName);
-//                        Author saved = authorRepository.save(author); // mai salvez autori?
-//                        listOfSavedAuthors.add(saved);
-//                    }
                     payload.setCoAuthorsNames(docDetails.getArticle().author);
                     payload.setPublicationDate(docDetails.getArticle().year);
                     payload.setTitle(docDetails.getArticle().title);
@@ -85,62 +82,31 @@ public class DblpDocumentsScraping implements IWebScrapingStep {
                     } else {
                         publication.setLink(docDetails.getArticle().ee.get(0));
                     }
-
                 }
                 else if (docDetails.getInproceedings() != null) {
-
-//                    List<Author> listOfSavedAuthors = new ArrayList<>();
-//                    for (String authorName : docDetails.getInproceedings().author) {
-//                        Author author = new Author();
-//                        author.setName(authorName);
-//                        Author saved = authorRepository.save(author);
-//                        listOfSavedAuthors.add(saved);
-//                    }
-
                     payload.setCoAuthorsNames(docDetails.getInproceedings().author);
                     payload.setPublicationDate(docDetails.getInproceedings().year);
                     payload.setTitle(docDetails.getInproceedings().title);
                     payload.setPages(docDetails.getInproceedings().pages);
                     payload.setIssued(docDetails.getInproceedings().booktitle);
-                    if (docDetails.getInproceedings().ee == null) {
-                        publication.setLink("No link provided");
-                    } else {
-                        publication.setLink(docDetails.getInproceedings().ee.get(0));
-                    }
+                    publication.setLink(Objects.requireNonNull(docDetails.getInproceedings().ee.get(0), "No link provided"));
                 }
-
-
                 else if (docDetails.getProceedings() != null) {
-//                    List<Author> listOfSavedAuthors = new ArrayList<>();
-//                    for (String authorName : docDetails.getProceedings().editor) {
-//                        Author author = new Author();
-//                        author.setName(authorName);
-//                        Author saved = authorRepository.save(author);
-//                        listOfSavedAuthors.add(saved);
-//                    }
                     payload.setCoAuthorsNames(docDetails.getProceedings().editor);
                     payload.setPublicationDate(docDetails.getProceedings().year);
                     payload.setTitle(docDetails.getProceedings().title);
                     payload.setIssued(docDetails.getProceedings().booktitle);
                     payload.setPublisher(docDetails.getProceedings().publisher);
                     payload.setVolume(docDetails.getProceedings().volume);
-                    //docDetails.getProceedings().series = numele seriei de carti ( nu exista in document)
-                    if (docDetails.getProceedings().ee == null) {
-                        publication.setLink("No link provided");
-                    } else {
-                        publication.setLink(docDetails.getProceedings().ee);
-                    }
-
+                    publication.setLink(Objects.requireNonNullElse(docDetails.getProceedings().ee, "No link provided"));
                 }
             }
         }
 
-        saveScrapedEntity(payload, parentId, null);
-
+        saveScrapedEntity(payload, parentId, scrapingSession.getId());
     }
 
-    private ScrapedEntity saveScrapedEntity(AuthorDocumentsPayload payload, UUID parentId, UUID sessionId) {
-
+    private void saveScrapedEntity(AuthorDocumentsPayload payload, UUID parentId, UUID sessionId) {
         ScrapedEntity scrapedEntity = new ScrapedEntity();
         scrapedEntity.setParentId(parentId);
         scrapedEntity.setSessionId(sessionId);
@@ -148,12 +114,11 @@ public class DblpDocumentsScraping implements IWebScrapingStep {
         scrapedEntity.setType(ScrapedEntityType.DOCUMENT);
         scrapedEntity.setDataSource(DataSourceType.DBLP);
 
-        return scrapedEntityRepository.save(scrapedEntity);
+        scrapedEntityRepository.save(scrapedEntity);
     }
 
     public Dblp extractXmlObject(String xmlLink) { //public pt ca e folosita in citation
-        WebClient client = webClientBuilder.build();
-        String data = client.get().uri(xmlLink).retrieve().bodyToMono(String.class).block();
+        String data = webClient.get().uri(xmlLink).retrieve().bodyToMono(String.class).block();
         Dblp docDetails = null;
         try {
             Unmarshaller decoder = JAXBContext.newInstance(Dblp.class).createUnmarshaller();

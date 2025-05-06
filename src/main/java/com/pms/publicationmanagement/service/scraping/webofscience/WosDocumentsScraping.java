@@ -12,6 +12,7 @@ import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingStep;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class WosDocumentsScraping implements IWebScrapingStep {
+
+    @Value("${wos.username}")
+    private String mail;
+
+    @Value("${wos.password}")
+    private String password;
 
     private final ScrapedEntityRepository scrapedEntityRepository;
 
@@ -37,8 +44,8 @@ public class WosDocumentsScraping implements IWebScrapingStep {
 
     private void authenticate(Page page) {
         page.navigate("https://access.clarivate.com/login?app=wos&alternative=true&shibShireURL=https:%2F%2Fwww.webofknowledge.com%2F%3Fauth%3DShibboleth&shibReturnURL=https:%2F%2Fwww.webofknowledge.com%2F&roaming=true");
-        page.locator("#mat-input-0").fill("ginjucristi@gmail.com");
-        page.locator("#mat-input-1").fill("WosTest1234*");
+        page.locator("#mat-input-0").fill(mail);
+        page.locator("#mat-input-1").fill(password);
         page.locator("#signIn-btn").click();
     }
 
