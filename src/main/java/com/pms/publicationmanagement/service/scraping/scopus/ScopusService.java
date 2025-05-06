@@ -9,6 +9,7 @@ import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingProfiling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.jobs.annotations.Job;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class ScopusService implements IWebScrapingProfiling {
 
     private final ScopusDocumentsScraping scopusDocumentsScraping;
     @Override
+    @Job(name = "scopus-scholar-scraping")
     public void scrape(ScrapingSession scrapingSession) {
         List<String> args = new ArrayList<>();
         args.add("--private");

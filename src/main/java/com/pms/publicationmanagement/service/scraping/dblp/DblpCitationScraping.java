@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.pms.publicationmanagement.service.scraping.dblp.DblpDocumentsScraping.extractXmlObject;
+//import static com.pms.publicationmanagement.service.scraping.dblp.DblpDocumentsScraping.extractXmlObject;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,8 @@ import static com.pms.publicationmanagement.service.scraping.dblp.DblpDocumentsS
 public class DblpCitationScraping implements IWebScrapingStep {
 
     private final ScrapedEntityRepository scrapedEntityRepository;
+
+    private final DblpDocumentsScraping dblpDocumentsScraping;
 
     @Override
     public void scrapeEntity(Page page, ScrapingSession scrapingSession, UUID parentId) {
@@ -65,7 +67,7 @@ public class DblpCitationScraping implements IWebScrapingStep {
             String citationXml = l.locator("nav").locator("ul").locator("li.drop-down")
                     .all().get(1).locator("div.body").locator("ul").first().locator("li")
                     .last().locator("a").getAttribute("href");
-            Dblp citationDetails = extractXmlObject(citationXml);
+            Dblp citationDetails = dblpDocumentsScraping.extractXmlObject(citationXml);
             if(citationDetails.getProceedings() != null) {
                 toBeAdded.setLink(citationDetails.getProceedings().ee);
             }

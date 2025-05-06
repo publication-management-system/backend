@@ -7,6 +7,7 @@ import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.model.scraping.ScrapingSessionStatus;
 import com.pms.publicationmanagement.repository.ScrapingSessionRepository;
 import lombok.RequiredArgsConstructor;
+import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public class WebScrapingService {
 
     private final ScrapingSessionMapper scrapingSessionMapper;
 
+    private final JobScheduler jobScheduler;
+
     public UUID runScraping(ScrapingRequestDto scrapingRequestDto) {
         ScrapingSession scrapingSession = createNewScrapingSession(scrapingRequestDto);
-        googleScholarProfilingService.scrape(scrapingSession);
-//        dblpService.scrape(scrapingSession);
-//        scopusService.scrape(scrapingSession);
-//        wosService.scrape(scrapingSession);
+//        jobScheduler.enqueue(() -> googleScholarProfilingService.scrape(scrapingSession));
+        jobScheduler.enqueue(() -> dblpService.scrape(scrapingSession));
+//        jobScheduler.enqueue(() -> scopusService.scrape(scrapingSession));
+//        jobScheduler.enqueue(() -> wosService.scrape(scrapingSession));
 
         return scrapingSession.getId();
     }
@@ -51,7 +54,8 @@ public class WebScrapingService {
         scrapingSession.setLastName(scrapingRequestDto.getLastName());
         scrapingSession.setStatus(ScrapingSessionStatus.IN_PROGRESS.name());
         scrapingSession.setUserId(scrapingRequestDto.getUserId());
-        scrapingSession.setInstitutionId(scrapingSession.getInstitutionId());
+        scrapingSession.setInstitutionId(scrapingRequestDto.getInstitutionId());
+        scrapingSession.setCreatedBy(scrapingRequestDto.getUserName());
 
         return scrapingSessionRepository.save(scrapingSession);
     }

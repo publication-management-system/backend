@@ -32,6 +32,8 @@ public class DblpDocumentsScraping implements IWebScrapingStep {
 
     private final ScrapedEntityRepository scrapedEntityRepository;
 
+    private final WebClient.Builder webClientBuilder;
+
     @Override
     public void scrapeEntity(Page page, ScrapingSession scrapingSession, UUID parentId) {
 
@@ -149,8 +151,8 @@ public class DblpDocumentsScraping implements IWebScrapingStep {
         return scrapedEntityRepository.save(scrapedEntity);
     }
 
-    public static Dblp extractXmlObject(String xmlLink) { //public pt ca e folosita in citation
-        WebClient client = WebClient.create();
+    public Dblp extractXmlObject(String xmlLink) { //public pt ca e folosita in citation
+        WebClient client = webClientBuilder.build();
         String data = client.get().uri(xmlLink).retrieve().bodyToMono(String.class).block();
         Dblp docDetails = null;
         try {

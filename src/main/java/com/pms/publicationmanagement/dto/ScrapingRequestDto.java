@@ -12,5 +12,6 @@ public class ScrapingRequestDto {
     private String lastName;
     private String institutionName;
     private String userId;
+    private String userName;
     private String institutionId;
 }

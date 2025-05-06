@@ -15,6 +15,7 @@ import com.pms.publicationmanagement.repository.UserRepository;
 import com.pms.publicationmanagement.service.encryption.EncryptionService;
 import com.pms.publicationmanagement.service.resource.ResourceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserService {
 
     @Value("${resource-config.base-url}")

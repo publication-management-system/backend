@@ -74,15 +74,15 @@ public class ScopusDocumentsScraping implements IWebScrapingStep {
 
             publication.setCoAuthorsNames(authorNames);
 
-            publication.setIssued(l.locator("em").last().innerText());
+//            publication.setIssued(l.locator("em").last().innerText());
 
 //            Locator child = l.locator("span.Typography-module__lVnit").locator("em");
 //
 //            Locator parent = l.locator("span").filter(new Locator.FilterOptions().setHas(child));
 
-            Locator dateLocator = l.locator("span.Typography-module__lVnit .Typography-module__Nfgvc").all().get(1);
-
-            publication.setPublicationDate(dateLocator.innerText().split(",")[0]);
+//            Locator dateLocator = l.locator("span.Typography-module__lVnit .Typography-module__Nfgvc").all().get(1);
+//
+//            publication.setPublicationDate(dateLocator.innerText().split(",")[0]);
 
             authorDocuments.add(publication);
         }

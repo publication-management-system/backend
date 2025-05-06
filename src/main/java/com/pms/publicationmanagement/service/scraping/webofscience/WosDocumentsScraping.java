@@ -38,29 +38,32 @@ public class WosDocumentsScraping implements IWebScrapingStep {
     private void authenticate(Page page) {
         page.navigate("https://access.clarivate.com/login?app=wos&alternative=true&shibShireURL=https:%2F%2Fwww.webofknowledge.com%2F%3Fauth%3DShibboleth&shibReturnURL=https:%2F%2Fwww.webofknowledge.com%2F&roaming=true");
         page.locator("#mat-input-0").fill("ginjucristi@gmail.com");
-        page.locator("#mat-input-1").fill("Test123*");
+        page.locator("#mat-input-1").fill("WosTest1234*");
         page.locator("#signIn-btn").click();
     }
 
     private List<AuthorDocumentsPayload> getToAuthorProfile(String lastName, String firstName, Page page) {
+
 //        page.waitForSelector("app-author-search");
+        int pageNumber = 1;
         page.locator("#onetrust-reject-all-handler").click();
         page.locator("#mat-input-0").fill(lastName);
         page.locator("#mat-input-1").fill(firstName);
         page.locator("div.button-row").locator("button").last().click();
 //        page.waitForSelector("div.results-column");
         List<AuthorDocumentsPayload> documentsPayloads = new ArrayList<>();
-        getPageOfPublications(page, documentsPayloads);
+        getPageOfPublications(page, documentsPayloads, pageNumber);
         Locator nextPageButton = page.locator("form.pagination").locator("button").last();
 
         while (nextPageButton.isEnabled()) {
             nextPageButton.click();
-            getPageOfPublications(page, documentsPayloads);
+            pageNumber ++;
+            getPageOfPublications(page, documentsPayloads, pageNumber);
             nextPageButton = nextPageButton = page.locator("form.pagination").locator("button").last();;
         }
         return documentsPayloads;
     }
-    private void getPageOfPublications(Page page, List<AuthorDocumentsPayload> documentsPayloads) {
+    private void getPageOfPublications(Page page, List<AuthorDocumentsPayload> documentsPayloads, int pageNumber) {
         page.waitForSelector("app-publications-tab"); //trebuie un wait mai bun
         try {
             Thread.sleep(1000);
@@ -71,7 +74,9 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         for(Locator l : publicationsLocators) {
             AuthorDocumentsPayload docPayload = new AuthorDocumentsPayload();
             l.scrollIntoViewIfNeeded();
-            l.locator("app-summary-title").locator("a").click();
+//            Page newPopUpWindow = page.context().newPage();
+//            newPopUpWindow.navigate("https://webofscience.com/" +  l.locator("app-summary-title").locator("a").getAttribute("href"));
+            l.locator("app-summary-title").locator("a").click(); //trebuie deschis in new tab
             page.waitForSelector("#snMainArticle");
             String[] authors = page.locator("#SumAuthTa-MainDiv-author-en").locator("span.cdx-grid-data").innerText().split(";");
             List<String> listOfSavedAuthors = new ArrayList<>();
@@ -108,6 +113,21 @@ public class WosDocumentsScraping implements IWebScrapingStep {
 //            String link = page.locator("#FullRTa-DOI").innerText(); //se poate gasi link din asta(nu stiu daca trebuie)
 
             page.goBack();
+
+            Locator nextPageButton = page.locator("form.pagination").locator("button").last();
+            for(int i = 0; i<pageNumber; i++) {
+                nextPageButton.click();
+                page.waitForSelector("form.pagination");
+            }
+
+            int min_wait = 1000;
+            int max_wait = 2000;
+            int wait_time = (int) ((Math.random() * (max_wait - min_wait)) + min_wait);
+            try {
+                Thread.sleep(wait_time);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             page.waitForSelector("app-publications-tab"); //trebuie un wait mai bun
 //            springJpaDocumentRepository.save(publication);

@@ -9,6 +9,7 @@ import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingProfiling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.jobs.annotations.Job;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ public class DblpService  implements IWebScrapingProfiling  {
 
     private final DblpCitationScraping dblpCitationScraping;
     @Override
+    @Job(name = "dblp-scholar-scraping")
     public void scrape(ScrapingSession scrapingSession) {
         try (Playwright playwright = Playwright.create();
 

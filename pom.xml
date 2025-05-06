@@ -92,7 +92,11 @@
             <version>8.0.33</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.jobrunr</groupId>
+            <artifactId>jobrunr-spring-boot-3-starter</artifactId>
+            <version>6.1.4</version>
+        </dependency>
 
     </dependencies>
 

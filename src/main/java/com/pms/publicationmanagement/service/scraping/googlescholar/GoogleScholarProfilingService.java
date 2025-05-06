@@ -9,6 +9,7 @@ import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingProfiling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.jobs.annotations.Job;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,12 +25,14 @@ public class GoogleScholarProfilingService implements IWebScrapingProfiling {
     private final GoogleScholarDocumentListScraping documentListScrapingStep;
 
     @Override
+    @Job(name = "google-scholar-scraping")
     public void scrape(ScrapingSession scrapingSession) {
         List<String> args = new ArrayList<>();
         args.add("-private");
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setArgs(args))) {
             Page page = browser.newPage();
+            page.setDefaultTimeout(60000);
             profileScrapingStep.scrapeEntity(page, scrapingSession, null);
 //            documentsScrapingStep.scrapeEntity(page, scrapingSession, null);
             documentListScrapingStep.scrapeEntity(page, scrapingSession, null);

@@ -37,7 +37,15 @@ public class GoogleScholarSingleDocumentScraping implements IWebScrapingStep {
             {
                 citationScrapingStep.scrapeEntity(page, scrapingSession, parentId);
             }
-            log.info("Scraped document {}", page.locator("a.gsc_oci_title_link").innerText());
+            log.info("Scraped document {}", page.locator("div#gsc_oci_title").innerText());
+            int min_wait = 1000;
+            int max_wait = 2000;
+            int wait_time = (int) ((Math.random() * (max_wait - min_wait)) + min_wait);
+            try {
+                Thread.sleep(wait_time);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
 
         } catch (Exception e) {

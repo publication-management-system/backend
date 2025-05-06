@@ -22,6 +22,8 @@ public class ScrapingSession {
     @NotNull
     private String userId;
 
+    private String createdBy;
+
     @NotNull
     private String institutionId;
 
