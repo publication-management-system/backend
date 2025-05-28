@@ -1,11 +1,10 @@
 package com.pms.publicationmanagement.service.user;
 
-import com.pms.publicationmanagement.dto.user.TaskDto;
+import com.pms.publicationmanagement.dto.projects.TaskDto;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
 import com.pms.publicationmanagement.model.user.Project;
 import com.pms.publicationmanagement.model.user.Task;
 import com.pms.publicationmanagement.model.user.TaskState;
-import com.pms.publicationmanagement.model.user.User;
 import com.pms.publicationmanagement.repository.ProjectRepository;
 import com.pms.publicationmanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
 
-    public void AddTask(UUID id, String title, String description) {
+    public void addTask(UUID id, String title, String description) {
         Task newTask = new Task();
 
         Project project =  projectRepository.findById(id).orElse(null);
@@ -59,7 +58,7 @@ public class TaskService {
             throw new RuntimeException("Task with id not found");
         }
 
-        task.setTitle(taskDto.title);
+        task.setTitle(taskDto.getTitle());
 
         taskRepository.save(task);
         return TaskDtoMapper.toTaskDto(task);
@@ -73,7 +72,7 @@ public class TaskService {
             throw new RuntimeException("Task with id not found");
         }
 
-        task.setDescription(taskDto.description);
+        task.setDescription(taskDto.getDescription());
 
         taskRepository.save(task);
         return TaskDtoMapper.toTaskDto(task);

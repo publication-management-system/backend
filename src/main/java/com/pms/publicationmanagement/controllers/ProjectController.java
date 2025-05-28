@@ -1,39 +1,40 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.dto.user.ProjectDto;
+import com.pms.publicationmanagement.dto.projects.CreateProjectDto;
+import com.pms.publicationmanagement.dto.projects.ProjectDto;
 import com.pms.publicationmanagement.mapper.ProjectDtoMapper;
 import com.pms.publicationmanagement.service.user.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/project")
+@RequestMapping("/api/projects")
+@RequiredArgsConstructor
 public class ProjectController {
 
     private final ProjectService projectService;
 
-    public ProjectController (ProjectService projectService) {this.projectService = projectService;}
-
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void addProject(@RequestBody ProjectDto projectDto) {
-        projectService.AddProject(projectDto.title, projectDto.description);
+    public void addProject(@RequestBody CreateProjectDto projectDto, @RequestParam UUID userId) {
+        projectService.addProject(projectDto, userId);
     }
 
     @GetMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void getTask(@PathVariable UUID id) {
+    public void getProjectById(@PathVariable UUID id) {
         projectService.findById(id);
     }
 
-    @GetMapping()
+    @GetMapping("/user/{userId}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public List<ProjectDto> getTask() {
-        return ProjectDtoMapper.toProjectDtoList(projectService.findAll());
+    public List<ProjectDto> getProjects(@PathVariable UUID userId) {
+        return ProjectDtoMapper.toProjectDtoList(projectService.findAllByUserId(userId));
     }
 
     @DeleteMapping("/{id}")

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -27,4 +28,9 @@ public class Project {
 
     private String description;
 
+    @ManyToMany(mappedBy = "projects")
+    private Set<User> users;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User projectOwner;
 }

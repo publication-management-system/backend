@@ -1,6 +1,6 @@
 package com.pms.publicationmanagement.mapper;
 
-import com.pms.publicationmanagement.dto.user.TaskDto;
+import com.pms.publicationmanagement.dto.projects.TaskDto;
 import com.pms.publicationmanagement.model.user.Task;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ public class TaskDtoMapper {
 
     public static TaskDto toTaskDto(Task task){
         TaskDto dto = new TaskDto();
-        dto.id = task.getId();
-        dto.title = task.getTitle();
-        dto.description = task.getDescription();
+        dto.setId(task.getId());
+        dto.setTitle(task.getTitle());
+        dto.setDescription(task.getDescription());
 
         return dto;
     }

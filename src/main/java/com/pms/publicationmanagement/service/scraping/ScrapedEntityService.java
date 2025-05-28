@@ -4,6 +4,7 @@ import com.pms.publicationmanagement.model.scraping.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntityType;
 import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
+import jakarta.persistence.metamodel.EntityType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,10 +25,12 @@ public class ScrapedEntityService {
         return scraps.getContent();
     }
 
-    public List<ScrapedEntity> getEntitiesFromSessionIdWithSource(UUID sessionId, DataSourceType dataSource, int pageNumber, int pageSize) {
-
+    public Page<ScrapedEntity> getEntitiesFromSessionIdWithSource(UUID sessionId,
+                                                                  DataSourceType dataSource,
+                                                                  ScrapedEntityType entityType,
+                                                                  int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<ScrapedEntity> scraps = scrapedEntityRepository.findAllBySessionIdAndDataSource(sessionId, dataSource, pageable);
-        return scraps.getContent();
+        return scrapedEntityRepository.findAllBySessionIdAndDataSourceAndType(sessionId,
+                dataSource, entityType, pageable);
     }
 }

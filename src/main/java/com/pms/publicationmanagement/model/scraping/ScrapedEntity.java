@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +29,8 @@ public class ScrapedEntity {
 
     @Column(columnDefinition="BLOB NOT NULL")
     private String payload;
+
+    private LocalDateTime scrapedAt;
 
     private UUID sessionId;
 }

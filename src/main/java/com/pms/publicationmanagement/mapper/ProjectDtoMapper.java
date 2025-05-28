@@ -1,6 +1,6 @@
 package com.pms.publicationmanagement.mapper;
 
-import com.pms.publicationmanagement.dto.user.ProjectDto;
+import com.pms.publicationmanagement.dto.projects.ProjectDto;
 import com.pms.publicationmanagement.model.user.Project;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ public class ProjectDtoMapper {
 
     public static ProjectDto toProjectDto(Project Project){
         ProjectDto dto = new ProjectDto();
-        dto.id = Project.getId();
-        dto.title = Project.getTitle();
-        dto.description = Project.getDescription();
+        dto.setId(Project.getId());
+        dto.setTitle(Project.getTitle());
+        dto.setDescription(Project.getDescription());
 
         return dto;
     }

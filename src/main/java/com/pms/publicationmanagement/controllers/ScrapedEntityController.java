@@ -6,13 +6,14 @@ import com.pms.publicationmanagement.model.scraping.ScrapedEntityType;
 import com.pms.publicationmanagement.service.scraping.ScrapedEntityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/scrapedentity")
+@RequestMapping("/api/scraped-entities")
 public class ScrapedEntityController {
     private final ScrapedEntityService scrapedEntityService;
 
@@ -22,12 +23,13 @@ public class ScrapedEntityController {
 
     @GetMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public List<ScrapedEntity> getScrapedEntity(
+    public Page<ScrapedEntity> getScrapedEntity(
             @PathVariable UUID id,
             @RequestParam(value = "source", defaultValue = "GOOGLE_SCHOLAR, required = false") DataSourceType dataSource,
+            @RequestParam(value = "entityType", defaultValue = "GOOGLE_SCHOLAR, required = false") ScrapedEntityType entityType,
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
     ) {
-        return scrapedEntityService.getEntitiesFromSessionIdWithSource(id, dataSource, pageNumber, pageSize);
+        return scrapedEntityService.getEntitiesFromSessionIdWithSource(id, dataSource, entityType, pageNumber, pageSize);
     }
 }

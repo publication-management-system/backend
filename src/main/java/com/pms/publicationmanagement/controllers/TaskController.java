@@ -1,9 +1,7 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.dto.UserDto;
-import com.pms.publicationmanagement.dto.user.TaskDto;
+import com.pms.publicationmanagement.dto.projects.TaskDto;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
-import com.pms.publicationmanagement.mapper.UserDtoMapper;
 import com.pms.publicationmanagement.service.user.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,7 +21,7 @@ public class TaskController {
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public void addTask(@PathVariable UUID id, @RequestBody TaskDto taskDto) {
-        taskService.AddTask(id, taskDto.title, taskDto.description);
+        taskService.addTask(id, taskDto.getTitle(), taskDto.getDescription());
     }
 
     @GetMapping("/{id}")
@@ -65,6 +63,6 @@ public class TaskController {
     @PatchMapping("/{id}/state")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public TaskDto updateTaskState(@PathVariable UUID id, @RequestBody TaskDto taskDto) {
-        return taskService.updateTaskStateById(id, taskDto.state);
+        return taskService.updateTaskStateById(id, taskDto.getState());
     }
 }

@@ -3,9 +3,13 @@ package com.pms.publicationmanagement.service.scraping;
 import com.pms.publicationmanagement.dto.ScrapingRequestDto;
 import com.pms.publicationmanagement.dto.ScrapingSessionDto;
 import com.pms.publicationmanagement.mapper.ScrapingSessionMapper;
+import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.model.scraping.ScrapingSessionStatus;
+import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
 import com.pms.publicationmanagement.repository.ScrapingSessionRepository;
+import com.pms.publicationmanagement.service.scraping.dblp.DblpScrapingService;
+import com.pms.publicationmanagement.service.scraping.googlescholar.GoogleScholarScrapingService;
 import lombok.RequiredArgsConstructor;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.stereotype.Service;
@@ -19,33 +23,32 @@ public class WebScrapingService {
 
     private final ScrapingSessionRepository scrapingSessionRepository;
 
-    private final IWebScrapingProfiling googleScholarProfilingService;
-
-    private final IWebScrapingProfiling dblpService;
-
-    private final IWebScrapingProfiling scopusService;
-
-    private final IWebScrapingProfiling wosService;
-
     private final ScrapingSessionMapper scrapingSessionMapper;
 
-    private final JobScheduler jobScheduler;
+    private final GoogleScholarScrapingService googleScholarScrapingService;
+
+    private final DblpScrapingService dblpScrapingService;
 
     public UUID runScraping(ScrapingRequestDto scrapingRequestDto) {
         ScrapingSession scrapingSession = createNewScrapingSession(scrapingRequestDto);
-//        jobScheduler.enqueue(() -> googleScholarProfilingService.scrape(scrapingSession));
-        jobScheduler.enqueue(() -> dblpService.scrape(scrapingSession));
-//        jobScheduler.enqueue(() -> scopusService.scrape(scrapingSession));
-//        jobScheduler.enqueue(() -> wosService.scrape(scrapingSession));
+//        googleScholarScrapingService.scrape(scrapingSession);
+        dblpScrapingService.scrape(scrapingSession);
 
         return scrapingSession.getId();
     }
 
 
     public List<ScrapingSessionDto> findAll(String institutionId) {
-        List<ScrapingSession> sessions =  scrapingSessionRepository.findAllByInstitutionId(institutionId);
+        return scrapingSessionMapper.scrapingSessionDtoList(
+                scrapingSessionRepository.findAllByInstitutionId(institutionId)
+        );
+    }
 
-        return scrapingSessionMapper.scrapingSessionDtoList(sessions);
+    public ScrapingSessionDto findById(UUID sessionId) {
+        ScrapingSession session = scrapingSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        return scrapingSessionMapper.toScrapingSessionDto(session);
     }
 
     private ScrapingSession createNewScrapingSession(ScrapingRequestDto scrapingRequestDto) {

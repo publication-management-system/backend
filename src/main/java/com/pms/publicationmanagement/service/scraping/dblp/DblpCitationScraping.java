@@ -89,7 +89,7 @@ public class DblpCitationScraping implements IWebScrapingStep {
             payload.add(toBeAdded);
         }
         page.goBack();
-
+    
     }
 
     private void saveScrapedEntity(List<AuthorCitationsPayload> authorCitationsPayload, UUID parentId, UUID sessionId) {
