@@ -2,14 +2,16 @@ package com.pms.publicationmanagement.controllers;
 
 import com.pms.publicationmanagement.dto.projects.CreateProjectDto;
 import com.pms.publicationmanagement.dto.projects.ProjectDto;
+import com.pms.publicationmanagement.dto.projects.UpdateTitleDescriptionDto;
 import com.pms.publicationmanagement.mapper.ProjectDtoMapper;
-import com.pms.publicationmanagement.service.user.ProjectService;
+import com.pms.publicationmanagement.model.user.Project;
+import com.pms.publicationmanagement.service.projects.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,20 +23,23 @@ public class ProjectController {
 
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void addProject(@RequestBody CreateProjectDto projectDto, @RequestParam UUID userId) {
-        projectService.addProject(projectDto, userId);
+    public ProjectDto addProject(@RequestBody CreateProjectDto projectDto, @RequestParam UUID userId) {
+        return projectService.addProject(projectDto, userId);
     }
 
     @GetMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void getProjectById(@PathVariable UUID id) {
-        projectService.findById(id);
+    public ProjectDto getProjectById(@PathVariable UUID id) {
+        return ProjectDtoMapper.toProjectDto(projectService.findById(id));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public List<ProjectDto> getProjects(@PathVariable UUID userId) {
-        return ProjectDtoMapper.toProjectDtoList(projectService.findAllByUserId(userId));
+    public Page<ProjectDto> getProjects(@PathVariable UUID userId,
+                                        @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                        @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        Page<Project> allByUserId = projectService.findAllByUserId(userId, pageNumber, pageSize);
+        return allByUserId.map(ProjectDtoMapper::toProjectDto);
     }
 
     @DeleteMapping("/{id}")
@@ -43,15 +48,9 @@ public class ProjectController {
         projectService.deleteProject(id);
     }
 
-    @PatchMapping("/{id}/title")
+    @PatchMapping("/{id}/edit")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public ProjectDto updateProjectTitle(@PathVariable UUID id, @RequestBody ProjectDto projectDto) {
-        return projectService.updateProjectTitleById(id, projectDto);
-    }
-
-    @PatchMapping("/{id}/description")
-    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public ProjectDto updateTaskDescription(@PathVariable UUID id, @RequestBody ProjectDto projectDto) {
-        return projectService.updateProjectDescriptionById(id, projectDto);
+    public ProjectDto updateTaskDescription(@PathVariable UUID id, @RequestBody UpdateTitleDescriptionDto updateTitleDescriptionDto) {
+        return projectService.updateTitleAndDescription(id, updateTitleDescriptionDto);
     }
 }

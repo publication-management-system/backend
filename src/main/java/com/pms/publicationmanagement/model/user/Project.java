@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Getter
@@ -29,8 +29,9 @@ public class Project {
     private String description;
 
     @ManyToMany(mappedBy = "projects")
-    private Set<User> users;
+    private List<User> users = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User projectOwner;
+    private UUID projectOwnerId;
+
+    private LocalDateTime createdAt;
 }

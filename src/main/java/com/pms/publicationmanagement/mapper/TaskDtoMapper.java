@@ -13,6 +13,7 @@ public class TaskDtoMapper {
         dto.setId(task.getId());
         dto.setTitle(task.getTitle());
         dto.setDescription(task.getDescription());
+        dto.setState(task.getState());
 
         return dto;
     }

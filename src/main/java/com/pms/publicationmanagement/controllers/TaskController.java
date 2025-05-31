@@ -1,8 +1,10 @@
 package com.pms.publicationmanagement.controllers;
 
+import com.pms.publicationmanagement.dto.projects.CreateTaskDto;
 import com.pms.publicationmanagement.dto.projects.TaskDto;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
-import com.pms.publicationmanagement.service.user.TaskService;
+import com.pms.publicationmanagement.model.user.TaskState;
+import com.pms.publicationmanagement.service.projects.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
@@ -11,17 +13,17 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/task")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
 
     public TaskController (TaskService taskService ) {this.taskService = taskService;}
 
-    @PostMapping
+    @PostMapping("/{projectId}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void addTask(@PathVariable UUID id, @RequestBody TaskDto taskDto) {
-        taskService.addTask(id, taskDto.getTitle(), taskDto.getDescription());
+    public TaskDto addTask(@PathVariable UUID projectId, @RequestBody CreateTaskDto taskDto) {
+        return taskService.addTask(projectId, taskDto.getTitle(), taskDto.getDescription());
     }
 
     @GetMapping("/{id}")
@@ -62,7 +64,7 @@ public class TaskController {
 
     @PatchMapping("/{id}/state")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public TaskDto updateTaskState(@PathVariable UUID id, @RequestBody TaskDto taskDto) {
-        return taskService.updateTaskStateById(id, taskDto.getState());
+    public TaskDto updateTaskState(@PathVariable UUID id, @RequestParam TaskState taskState) {
+        return taskService.updateTaskStateById(id, taskState);
     }
 }

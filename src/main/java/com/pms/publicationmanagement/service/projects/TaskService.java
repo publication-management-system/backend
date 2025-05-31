@@ -1,4 +1,4 @@
-package com.pms.publicationmanagement.service.user;
+package com.pms.publicationmanagement.service.projects;
 
 import com.pms.publicationmanagement.dto.projects.TaskDto;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
@@ -20,17 +20,21 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
 
-    public void addTask(UUID id, String title, String description) {
+    public TaskDto addTask(UUID projectId, String title, String description) {
         Task newTask = new Task();
 
-        Project project =  projectRepository.findById(id).orElse(null);
+        Project project =  projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+
         newTask.setProject(project);
         newTask.setId(UUID.randomUUID());
         newTask.setTitle(title);
         newTask.setDescription(description);
-        newTask.setState(TaskState.ToDo);
+        newTask.setState(TaskState.Backlog);
 
         taskRepository.save(newTask);
+
+        return TaskDtoMapper.toTaskDto(newTask);
     }
 
     public List<Task> findAll() { return taskRepository.findAll(); }
