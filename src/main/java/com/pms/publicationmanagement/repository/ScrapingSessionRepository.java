@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ScrapingSessionRepository extends JpaRepository<ScrapingSession, UUID> {
     List<ScrapingSession> findAllByInstitutionId(String institutionId);
+
+    Long countByInstitutionId(String institutionId);
 }

@@ -10,6 +10,7 @@ import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
 import com.pms.publicationmanagement.repository.ScrapingSessionRepository;
 import com.pms.publicationmanagement.service.scraping.dblp.DblpScrapingService;
 import com.pms.publicationmanagement.service.scraping.googlescholar.GoogleScholarScrapingService;
+import com.pms.publicationmanagement.service.scraping.webofscience.WosScrapingService;
 import lombok.RequiredArgsConstructor;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,13 @@ public class WebScrapingService {
 
     private final DblpScrapingService dblpScrapingService;
 
+    private final WosScrapingService wosScrapingService;
+
     public UUID runScraping(ScrapingRequestDto scrapingRequestDto) {
         ScrapingSession scrapingSession = createNewScrapingSession(scrapingRequestDto);
-//        googleScholarScrapingService.scrape(scrapingSession);
+        googleScholarScrapingService.scrape(scrapingSession);
         dblpScrapingService.scrape(scrapingSession);
+//        wosScrapingService.scrape(scrapingSession);
 
         return scrapingSession.getId();
     }

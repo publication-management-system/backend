@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findAllByInstitutionId(UUID institutionId);
 
     User findByEmail(String email);
+
+    Long countByInstitutionId(UUID institutionId);
 }
