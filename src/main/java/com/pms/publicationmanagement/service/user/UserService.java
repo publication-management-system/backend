@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -89,7 +90,7 @@ public class UserService {
     }
 
     public User acceptInvitation(AcceptInvitationDto acceptInvitationDto) {
-        Invitation invitation = invitationRepository.findInvitationById(acceptInvitationDto.invitationId).orElseThrow(() ->
+        Invitation invitation = invitationRepository.findById(acceptInvitationDto.invitationId).orElseThrow(() ->
                 new RuntimeException("Institution not found"));
         User toBeInvited = new User();
 
@@ -98,9 +99,11 @@ public class UserService {
         toBeInvited.setMiddleName(acceptInvitationDto.middleName);
         toBeInvited.setLastName(acceptInvitationDto.lastName);
         toBeInvited.setPassword(encryptionService.encryptPassword(acceptInvitationDto.password));
-        toBeInvited.setInstitution(institutionService.findById(UUID.fromString(invitation.getInstitutionId())).orElseThrow(
-                () -> new RuntimeException("Institution not found")
-        ));
+        toBeInvited.setInstitution(institutionService.findById(UUID.fromString(invitation.getInstitutionId()))
+                .orElseThrow(() -> new RuntimeException("Institution not found")));
+        toBeInvited.setUserRole(UserRole.ROLE_MEMBER);
+        invitation.setAcceptedAt(LocalDateTime.now());
+        invitationRepository.save(invitation);
 
         return userRepository.save(toBeInvited);
 

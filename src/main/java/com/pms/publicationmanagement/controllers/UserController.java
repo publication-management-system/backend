@@ -44,12 +44,6 @@ public class UserController {
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public UserDto getUserById(@PathVariable UUID id) { return UserDtoMapper.toUserDto(userService.findById(id)); }
 
-    @PostMapping("/invite-user")
-    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public UserDto acceptInvitation(@RequestBody AcceptInvitationDto acceptInvitationDto) {
-        return UserDtoMapper.toUserDto(userService.acceptInvitation(acceptInvitationDto));
-    }
-
     @GetMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<UserDto> findAllUsers() {

@@ -22,14 +22,14 @@ public class InvitationController {
 
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void AddInvitation(@RequestBody AddInvitationDto addInvitationDto) {
+    public void addInvitation(@RequestBody AddInvitationDto addInvitationDto) {
         invitationService.sendInvitation(addInvitationDto);
     }
 
-    @GetMapping("/available")
+    @GetMapping("/{id}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public List<InvitationDto> findAvailableInvitations(@RequestParam Boolean wasTaken) {
-        return InvitationDtoMapper.toInvitationDtoList(invitationService.findAvailable(wasTaken));
+    public InvitationDto findById(@RequestParam UUID id) {
+        return InvitationDtoMapper.toInvitationDto(invitationService.findById(id));
     }
 
     @GetMapping

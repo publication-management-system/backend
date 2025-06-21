@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Invitation {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String link;
@@ -24,5 +24,7 @@ public class Invitation {
 
     private String institutionId;
 
-    private boolean wasTaken;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime acceptedAt;
 }
