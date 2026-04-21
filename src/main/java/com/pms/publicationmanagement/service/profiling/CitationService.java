@@ -16,7 +16,7 @@ public class CitationService {
     private final CitationRepository citationRepository;
 
     public void addCitation(UUID id, String title, String link, Document document) {
-        citationRepository.save(new Citation(id, title, link, document));
+//        citationRepository.save(new Citation(id, title, link, document));
     }
 
     public void deleteCitation(UUID id) {

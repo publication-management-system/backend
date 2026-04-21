@@ -55,17 +55,15 @@ public class ScrapingService2 {
 
     public Page<ScrapingQueueItem> getNextEnqueuedItemsByUserId(UUID userId) {
         var enqueuedTasksByPriorityPaged = PageRequest
-                .of(0, 10, Sort.by("priority").descending());
+                .of(0, 10, Sort.by("priority").ascending());
 
-        var scrapingItems = scrapingQueueItemsRepository.findAllByCreatedById(userId, enqueuedTasksByPriorityPaged);
-
-        return scrapingItems;
+        return scrapingQueueItemsRepository.findAllByCreatedById(userId, enqueuedTasksByPriorityPaged);
     }
 
 
     public void runEnqueuedTasks() {
         var enqueuedTasksByPriorityPaged = PageRequest
-                .of(0, 10, Sort.by("priority").descending());
+                .of(0, 10, Sort.by("priority").ascending());
 
         var scrapingItems = scrapingQueueItemsRepository.findAll(enqueuedTasksByPriorityPaged);
 
@@ -74,16 +72,16 @@ public class ScrapingService2 {
         }
     }
 
-    private void callScrapingService(ScrapingQueueItem item) {
+    private void callScrapingService(ScrapingQueueItem request) {
         var response = scrapingServiceWebClient.post()
                 .uri(uriBuilder -> uriBuilder.path(scrapingRunApiPath)
-                    .queryParam("actionType", item.getType().name())
+                    .queryParam("actionType", request.getType().name())
                     .build())
-                .bodyValue(new ScrapingPayload(item.getPayload(), item.getRefId()))
+                .bodyValue(new ScrapingPayload(request.getPayload(), request.getRefId()))
                 .retrieve()
                 .bodyToMono(ScrapingResponse.class)
                 .block();
 
-        transformationOrchestrator.transformScraping(item, response);
+        transformationOrchestrator.transformScraping(request, response);
     }
 }

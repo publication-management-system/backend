@@ -1,14 +1,16 @@
 package com.pms.publicationmanagement.model.profiling;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Citation {
 
     @Id
@@ -17,19 +19,15 @@ public class Citation {
 
     private String title;
 
+    @Lob
+    @Column(length = 1000)
     private String link;
+
+    @Lob
+    @Column(length = 1000)
+    private String pdf;
 
     @ManyToOne
     @JoinColumn(name="document_id")
     private Document document;
-
-    public Citation(UUID id, String title, String link, Document document) {
-        this.id = id;
-        this.title = title;
-        this.link = link;
-        this.document = document;
-    }
-
-    public Citation() {
-    }
 }

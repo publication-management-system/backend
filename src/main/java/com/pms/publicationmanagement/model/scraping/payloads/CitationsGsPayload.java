@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthorCitationsPayload {
-    private String link;
+public class CitationsGsPayload {
     private String title;
-    private String documentId;
+    private String citationsLink;
+    private String pdfLink;
+    private String refId;
 }
+
