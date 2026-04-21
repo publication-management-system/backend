@@ -1,17 +1,7 @@
 package com.pms.publicationmanagement.model.profiling;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +18,7 @@ date despre jurnal/conferinta:
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,13 +27,37 @@ public class Document {
     private String publicationDate;
     @ManyToMany
     private List<Author> authors;
+
     private String issued;
+
+    @Lob
+    @Column(length = 1000)
     private String volume;
+
+    @Lob
+    @Column(length = 1000)
     private String issue;
+
     private String pages;
+
+    @Lob
+    @Column(length = 1000)
     private String publisher;
+
+    @Lob
+    @Column(length = 16777216)
     private String description;
+
+    @Lob
+    @Column(length = 1000)
     private String link;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy="document", cascade = CascadeType.ALL)
     private List<Citation> citedIn;
+
+    private String googleScholarId;
+    private String dblpId;
+    private String wosId;
+
+    private String internalRefId;
 }

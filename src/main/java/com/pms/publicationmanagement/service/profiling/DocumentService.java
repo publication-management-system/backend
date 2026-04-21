@@ -15,16 +15,6 @@ import java.util.UUID;
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
-    public void addDocument(UUID id, String title, String publicationDate, List<Author> authors,
-                            String issued, String volume, String issue, String pages, String publisher,
-                            String description, List<Citation> citedIn, String link) {
-
-        Document saved = new Document(id, title, publicationDate, authors,
-                issued, volume, issue, pages, publisher,
-                description, link, citedIn);
-
-        documentRepository.save(saved);
-    }
 
     public List<Document> getByTitle(String title) {
         return documentRepository.findByTitle(title);

@@ -19,5 +19,4 @@ public class DocumentOwnership implements Serializable {
     @MapsId("documentId")
     @JoinColumn(name = "document_id")
     Document document;
-
 }

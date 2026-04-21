@@ -17,7 +17,7 @@ public class AuthorService {
 
     //bahaos cu id-urile (cateodata sunt la param, cateodata nu)
     public void addAuthor(UUID id, String name, String role, String institution, String institutionMail, List<Document> documents) {
-        authorRepository.save(new Author(null, name, role, institution, institutionMail, documents));
+//        authorRepository.save(new Author(UUID.randomUUID(), name, role, institution, institutionMail, documents));
     }
 
     public List<Author> getAuthorByName(String name) {
@@ -25,7 +25,7 @@ public class AuthorService {
     }
 
     public List<Author> getAuthorByRole(String role) {
-        return authorRepository.findByRole(role);
+        return authorRepository.findByInstitutionRole(role);
     }
 
     public List<Author> getAuthorByInstitution(String institution) {

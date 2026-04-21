@@ -9,8 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthorDocumentsPayload {
-
+public class DocumentPayload {
     private String title;
     private String publicationDate;
     private List<String> coAuthorsNames;
@@ -21,5 +20,5 @@ public class AuthorDocumentsPayload {
     private String publisher;
     private String description;
     private String link;
-
+    private String providerId;
 }

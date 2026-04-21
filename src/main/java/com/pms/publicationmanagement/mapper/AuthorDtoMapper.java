@@ -12,7 +12,7 @@ public class AuthorDtoMapper {
         AuthorDto authorDto = new AuthorDto();
         authorDto.id = author.getId();
         authorDto.name = author.getName();
-        authorDto.role = author.getRole();
+        authorDto.role = author.getInstitutionRole();
         authorDto.institution = author.getInstitution();
         authorDto.institutionMail = author.getInstitutionMail();
         authorDto.documents = author.getDocuments();

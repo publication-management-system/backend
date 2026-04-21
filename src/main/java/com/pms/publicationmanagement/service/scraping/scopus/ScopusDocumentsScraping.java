@@ -8,7 +8,7 @@ import com.pms.publicationmanagement.model.scraping.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntityType;
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
-import com.pms.publicationmanagement.model.scraping.payloads.AuthorDocumentsPayload;
+import com.pms.publicationmanagement.model.scraping.payloads.DocumentPayload;
 import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingStep;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class ScopusDocumentsScraping implements IWebScrapingStep {
 
         getToAuthorProfile(page, scrapingSession);
 
-        List<AuthorDocumentsPayload> payload = scrapeDocuments(page);
+        List<DocumentPayload> payload = scrapeDocuments(page);
 
         saveScrapedEntity(payload, parentId, null);
 
@@ -52,7 +52,7 @@ public class ScopusDocumentsScraping implements IWebScrapingStep {
         page.locator(AUTHOR_SEARCH_FIRST_RESULT).locator("td").locator("a").click();
     }
 
-    private List<AuthorDocumentsPayload> scrapeDocuments(Page page) {
+    private List<DocumentPayload> scrapeDocuments(Page page) {
 
         page.locator(DOCUMENTS_CONTAINER_ID).scrollIntoViewIfNeeded();
         try {
@@ -61,11 +61,11 @@ public class ScopusDocumentsScraping implements IWebScrapingStep {
             throw new RuntimeException(e);
         }
 
-        List<AuthorDocumentsPayload> authorDocuments = new ArrayList<>();
+        List<DocumentPayload> authorDocuments = new ArrayList<>();
 
         List<Locator> docLocators = page.getByTestId("results-list-item").all();
         for(Locator l : docLocators) {
-            AuthorDocumentsPayload publication = new AuthorDocumentsPayload();
+            DocumentPayload publication = new DocumentPayload();
 
             publication.setTitle(l.locator("h4").innerText());
 
@@ -89,12 +89,12 @@ public class ScopusDocumentsScraping implements IWebScrapingStep {
         return authorDocuments;
     }
 
-    private void saveScrapedEntity(List<AuthorDocumentsPayload> authorDocumentsPayloads, UUID parentId, UUID sessionId) {
+    private void saveScrapedEntity(List<DocumentPayload> documentPayloads, UUID parentId, UUID sessionId) {
 
         ScrapedEntity scrapedEntity = new ScrapedEntity();
         scrapedEntity.setParentId(parentId);
         scrapedEntity.setSessionId(sessionId);
-        scrapedEntity.setPayload(new Gson().toJson(authorDocumentsPayloads));
+        scrapedEntity.setPayload(new Gson().toJson(documentPayloads));
         scrapedEntity.setType(ScrapedEntityType.DOCUMENT);
         scrapedEntity.setDataSource(DataSourceType.SCOPUS);
 

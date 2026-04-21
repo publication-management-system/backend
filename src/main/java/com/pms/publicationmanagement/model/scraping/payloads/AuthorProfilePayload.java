@@ -4,11 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//"author_name": "string",
-//        "institution": "string",
-//        "institutionRole": "string",
-//        "email": "string",
-//        "imageUrl": "string"
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,4 +18,7 @@ public class AuthorProfilePayload {
     private String institutionRole;
     private String email;
     private String imageUrl;
+    private String providerId;
+    private String internalRefId;
+    private List<String> topicElements;
 }

@@ -7,7 +7,7 @@ import com.pms.publicationmanagement.model.scraping.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntityType;
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
-import com.pms.publicationmanagement.model.scraping.payloads.AuthorDocumentsPayload;
+import com.pms.publicationmanagement.model.scraping.payloads.DocumentPayload;
 import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingStep;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class WosDocumentsScraping implements IWebScrapingStep {
     public void scrapeEntity(Page page, ScrapingSession scrapingSession, UUID parentId) {
 
         authenticate(page);
-        List<AuthorDocumentsPayload> docs =  getToAuthorProfile(scrapingSession.getLastName(),
+        List<DocumentPayload> docs =  getToAuthorProfile(scrapingSession.getLastName(),
                 scrapingSession.getFirstName(), page);
         saveScrapedEntity(docs, parentId, null);
     }
@@ -49,7 +49,7 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         page.locator("#signIn-btn").click();
     }
 
-    private List<AuthorDocumentsPayload> getToAuthorProfile(String lastName, String firstName, Page page) {
+    private List<DocumentPayload> getToAuthorProfile(String lastName, String firstName, Page page) {
 
 //        page.waitForSelector("app-author-search");
         int pageNumber = 1;
@@ -58,7 +58,7 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         page.locator("#mat-input-1").fill(firstName);
         page.locator("div.button-row").locator("button").last().click();
 //        page.waitForSelector("div.results-column");
-        List<AuthorDocumentsPayload> documentsPayloads = new ArrayList<>();
+        List<DocumentPayload> documentsPayloads = new ArrayList<>();
         getPageOfPublications(page, documentsPayloads, pageNumber);
         Locator nextPageButton = page.locator("form.pagination").locator("button").last();
 
@@ -70,7 +70,7 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         }
         return documentsPayloads;
     }
-    private void getPageOfPublications(Page page, List<AuthorDocumentsPayload> documentsPayloads, int pageNumber) {
+    private void getPageOfPublications(Page page, List<DocumentPayload> documentsPayloads, int pageNumber) {
         page.waitForSelector("app-publications-tab"); //trebuie un wait mai bun
         try {
             Thread.sleep(1000);
@@ -79,7 +79,7 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         }
         List<Locator> publicationsLocators = page.locator("app-publications-tab").locator("app-record").all();
         for(Locator l : publicationsLocators) {
-            AuthorDocumentsPayload docPayload = new AuthorDocumentsPayload();
+            DocumentPayload docPayload = new DocumentPayload();
             l.scrollIntoViewIfNeeded();
 //            Page newPopUpWindow = page.context().newPage();
 //            newPopUpWindow.navigate("https://webofscience.com/" +  l.locator("app-summary-title").locator("a").getAttribute("href"));
@@ -141,12 +141,12 @@ public class WosDocumentsScraping implements IWebScrapingStep {
         }
     }
 
-    private void saveScrapedEntity(List<AuthorDocumentsPayload> authorDocumentsPayloads, UUID parentId, UUID sessionId) {
+    private void saveScrapedEntity(List<DocumentPayload> documentPayloads, UUID parentId, UUID sessionId) {
 
         ScrapedEntity scrapedEntity = new ScrapedEntity();
         scrapedEntity.setParentId(parentId);
         scrapedEntity.setSessionId(sessionId);
-        scrapedEntity.setPayload(new Gson().toJson(authorDocumentsPayloads));
+        scrapedEntity.setPayload(new Gson().toJson(documentPayloads));
         scrapedEntity.setType(ScrapedEntityType.DOCUMENT);
         scrapedEntity.setDataSource(DataSourceType.WEB_OF_SCIENCE);
         scrapedEntityRepository.save(scrapedEntity);

@@ -1,10 +1,7 @@
 package com.pms.publicationmanagement.model.profiling;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Author {
 
     @Id
@@ -23,11 +21,29 @@ public class Author {
 
     private String name;
 
-    private String role;
+    private String firstName;
+
+    private String lastName;
+
+    private String middleName;
+
+    private String googleScholarId;
+
+    private String dblpId;
+
+    private String wosId;
+
+    private String institutionRole;
 
     private String institution;
 
     private String institutionMail;
+
+    private String internalRefId;
+
+    private String imageUrl;
+
+    private String topics;
 
     @ManyToMany
     private List<Document> documents = new ArrayList<>();

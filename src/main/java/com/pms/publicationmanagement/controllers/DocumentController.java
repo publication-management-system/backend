@@ -21,14 +21,6 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @PostMapping
-    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void addDocument(@RequestBody DocumentDto documentDto) {
-        documentService.addDocument(documentDto.id, documentDto.title, documentDto.publicationDate, documentDto.authors,
-                documentDto.issued, documentDto.volume, documentDto.issue, documentDto.pages, documentDto.publisher,
-                documentDto.description, documentDto.citedIn, documentDto.link);
-    }
-
     @GetMapping("by-title")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<DocumentDto> getDocumentByTitle(@RequestParam String title) {

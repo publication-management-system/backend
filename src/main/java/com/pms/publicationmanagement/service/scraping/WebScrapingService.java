@@ -28,14 +28,14 @@ public class WebScrapingService {
 
     private final GoogleScholarScrapingService googleScholarScrapingService;
 
-    private final DblpScrapingService dblpScrapingService;
+//    private final DblpScrapingService dblpScrapingService;
 
-    private final WosScrapingService wosScrapingService;
+//    private final WosScrapingService wosScrapingService;
 
     public UUID runScraping(ScrapingRequestDto scrapingRequestDto) {
         ScrapingSession scrapingSession = createNewScrapingSession(scrapingRequestDto);
         googleScholarScrapingService.scrape(scrapingSession);
-        dblpScrapingService.scrape(scrapingSession);
+//        dblpScrapingService.scrape(scrapingSession);
 //        wosScrapingService.scrape(scrapingSession);
 
         return scrapingSession.getId();
