@@ -44,8 +44,13 @@ public class Author {
     private String imageUrl;
 
     private String topics;
+    
+    private String h_index;
 
-    @ManyToMany
+    private String i10_index;
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "authors")
     private List<Document> documents = new ArrayList<>();
 
     public void addDocuments(List<Document> documents) {

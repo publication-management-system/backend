@@ -10,6 +10,7 @@ import com.pms.publicationmanagement.model.scraping.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.payloads.CitationsGsPayload;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.repository.CitationRepository;
+import com.pms.publicationmanagement.repository.DocumentRepository;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,34 +23,47 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CitationsTransformer implements ITransformer  {
+public class CitationsTransformer implements ITransformer {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private final CitationRepository citationRepository;
+    private final DocumentRepository documentRepository;
 
     @Override
-    public void save(ScrapingQueueItem scrapingRequest, ScrapingResponse scrapingResponse, DataSourceType providerType) {
-        List<CitationsGsPayload> payloadCitations = new Gson().fromJson(scrapingResponse.getData(),
-                new TypeToken<List<CitationsGsPayload>>() {}.getType());
+    public void save(
+            ScrapingQueueItem scrapingRequest,
+            ScrapingResponse scrapingResponse,
+            DataSourceType providerType
+    ) {
+        List<CitationsGsPayload> payloadCitations = GSON.fromJson(
+                scrapingResponse.getData(),
+                new TypeToken<List<CitationsGsPayload>>() {}.getType()
+        );
+
+        UUID documentId = UUID.fromString(scrapingResponse.getRefId());
+
+        var document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalStateException("Document not found: " + documentId));
 
         for (var payload : payloadCitations) {
-            var existingCitations = citationRepository.findByTitle(payload.getCitationsLink());
+            boolean exists = citationRepository.existsByDocumentIdAndLink(
+                    documentId,
+                    payload.getCitationsLink()
+            );
 
-            if (existingCitations == null || existingCitations.isEmpty()) {
-                var newCitation = toCitation(payload, scrapingRequest.getRefId());
-                citationRepository.save(newCitation);
+            if (!exists) {
+                citationRepository.save(toCitation(payload, document));
             }
         }
     }
 
-    private static Citation toCitation(CitationsGsPayload payload, String refId) {
+    private static Citation toCitation(CitationsGsPayload payload, Document document) {
         return Citation.builder()
                 .id(UUID.randomUUID())
                 .title(payload.getTitle())
                 .link(payload.getCitationsLink())
-                .title(payload.getTitle())
                 .pdf(payload.getPdfLink())
-                .document(Document.builder().id(UUID.fromString(refId)).build())
+                .document(document)
                 .build();
     }
 }

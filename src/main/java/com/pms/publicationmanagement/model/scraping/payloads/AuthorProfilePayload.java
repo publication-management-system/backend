@@ -20,5 +20,7 @@ public class AuthorProfilePayload {
     private String imageUrl;
     private String providerId;
     private String internalRefId;
+    private String h_index;
+    private String i10_index;
     private List<String> topicElements;
 }

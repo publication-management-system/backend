@@ -1,8 +1,9 @@
-package com.pms.publicationmanagement.controllers;
+package com.pms.publicationmanagement.controllers.scraping;
 
 import com.pms.publicationmanagement.dto.scraping.EnqueueScrapingRequestDto;
 import com.pms.publicationmanagement.dto.scraping.ScrapingNextInQueueResponseDto;
 import com.pms.publicationmanagement.dto.scraping.ScrapingStatusResponseDto;
+import com.pms.publicationmanagement.dto.stats.ScrapingStatsDto;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.service.scraping.ScrapingService2;
 import jakarta.validation.Valid;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,13 +33,6 @@ public class ScrapingController {
         return new ScrapingStatusResponseDto("Enqueued");
     }
 
-    @PostMapping
-    public ScrapingStatusResponseDto runScraping() {
-        scrapingService2.runEnqueuedTasks();
-
-        return new ScrapingStatusResponseDto("Running");
-    }
-
     @GetMapping("/next-in-queue")
     public ScrapingNextInQueueResponseDto getNextInQueueItems(@RequestParam UUID userId) {
         Page<ScrapingQueueItem> nextEnqueuedItemsByUserId = scrapingService2.getNextEnqueuedItemsByUserId(userId);
@@ -48,5 +41,10 @@ public class ScrapingController {
                 nextEnqueuedItemsByUserId.stream().toList(),
                 nextEnqueuedItemsByUserId.getTotalElements()
         );
+    }
+
+    @GetMapping("/stats")
+    public ScrapingStatsDto getStats() {
+        return scrapingService2.getStats();
     }
 }

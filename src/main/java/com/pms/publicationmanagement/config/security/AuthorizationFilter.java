@@ -37,21 +37,36 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        boolean isValidToken = tokenService.validateToken(token);
+        String token = authHeader.substring(BEARER.length());
 
-        if (!isValidToken) {
-            filterChain.doFilter(request, response);
-            return;
+        try {
+            boolean isValidToken = tokenService.validateToken(token);
+
+            if (!isValidToken) {
+                SecurityContextHolder.clearContext();
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserTokenDetails principal = tokenService.decodeToken(token);
+
+                List<SimpleGrantedAuthority> authorities = List.of(
+                        new SimpleGrantedAuthority(principal.getRole().name())
+                );
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception exception) {
+            SecurityContextHolder.clearContext();
         }
-
-        UserTokenDetails principal = tokenService.decodeToken(token);
-        List<SimpleGrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority(principal.getRole().name())
-        );
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }

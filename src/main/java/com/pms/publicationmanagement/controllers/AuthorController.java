@@ -57,11 +57,4 @@ public class AuthorController {
     public void removeAuthorById(@PathVariable UUID id) {
         authorService.removeAuthor(id);
     }
-
-    @GetMapping
-    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public List<AuthorDto> getAllAuthors() {
-        return AuthorDtoMapper.toAuthorDtoList(authorService.getAll());
-    }
-
 }

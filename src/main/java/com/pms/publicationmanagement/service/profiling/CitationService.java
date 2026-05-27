@@ -1,5 +1,7 @@
 package com.pms.publicationmanagement.service.profiling;
 
+import com.pms.publicationmanagement.dto.citations.CitationDetailsDto;
+import com.pms.publicationmanagement.mapper.profiling.CitationDetailsMapper;
 import com.pms.publicationmanagement.model.profiling.Citation;
 import com.pms.publicationmanagement.model.profiling.Document;
 import com.pms.publicationmanagement.repository.CitationRepository;
@@ -25,5 +27,11 @@ public class CitationService {
 
     public List<Citation> findAll() {
         return citationRepository.findAll();
+    }
+
+    public List<CitationDetailsDto> findAllByDocumentId(UUID documentId) {
+        List<Citation> citations = citationRepository.findAllByDocumentId(documentId);
+
+        return CitationDetailsMapper.toDetailsDtoList(citations);
     }
 }

@@ -14,8 +14,8 @@ public class ScrapingTaskExecutorConfig {
     public TaskExecutor scrapingTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(5);
-        taskExecutor.setMaxPoolSize(10);
-        taskExecutor.setQueueCapacity(25);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(200);
 
         taskExecutor.setThreadNamePrefix("scraping-executor-async-");
 

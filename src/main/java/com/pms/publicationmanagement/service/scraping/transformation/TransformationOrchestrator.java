@@ -1,12 +1,16 @@
 package com.pms.publicationmanagement.service.scraping.transformation;
 
+import com.pms.publicationmanagement.model.scraping.event.ScrapingEvent;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
-import com.pms.publicationmanagement.repository.ScrapingQueueItemsRepository;
+import com.pms.publicationmanagement.repository.scraping.ScrapingEventRepository;
+import com.pms.publicationmanagement.repository.scraping.ScrapingQueueItemsRepository;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class TransformationOrchestrator {
     private final DocumentTransformer documentTransformer;
     private final CitationsTransformer citationsTransformer;
     private final ScrapingQueueItemsRepository scrapingQueueItemsRepository;
+    private final ScrapingEventRepository scrapingEventRepository;
 
     public void transformScraping(ScrapingQueueItem scrapingRequest, ScrapingResponse scrapingResponse) {
         switch (ScrapingQueueItemType.valueOf(scrapingRequest.getType().name())) {
@@ -37,7 +42,17 @@ public class TransformationOrchestrator {
             }
         }
 
+        var scrapingEvent = ScrapingEvent.builder()
+                .institutionId(scrapingRequest.getInstitutionId())
+                .provider(scrapingRequest.getProvider())
+                .type(scrapingRequest.getType())
+                .scrapedAt(LocalDateTime.now())
+                .success(true)
+                .build();
+
         scrapingQueueItemsRepository.deleteById(scrapingRequest.getId());
+
+        scrapingEventRepository.save(scrapingEvent);
     }
 
 }

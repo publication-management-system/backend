@@ -1,7 +1,8 @@
 package com.pms.publicationmanagement.service.profiling;
 
+import com.pms.publicationmanagement.dto.documents.DocumentDetailsDto;
+import com.pms.publicationmanagement.mapper.profiling.DocumentDetailsMapper;
 import com.pms.publicationmanagement.model.profiling.Author;
-import com.pms.publicationmanagement.model.profiling.Citation;
 import com.pms.publicationmanagement.model.profiling.Document;
 import com.pms.publicationmanagement.repository.DocumentRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,12 @@ public class DocumentService {
 
     public List<Document> getAll() {
         return documentRepository.findAll();
+    }
+
+    public DocumentDetailsDto findDocumentById(UUID documentId) {
+        var doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        return DocumentDetailsMapper.toDocumentDetails(doc);
     }
 }

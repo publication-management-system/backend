@@ -1,4 +1,4 @@
-package com.pms.publicationmanagement.repository;
+package com.pms.publicationmanagement.repository.scraping;
 
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import org.springframework.data.jpa.repository.JpaRepository;

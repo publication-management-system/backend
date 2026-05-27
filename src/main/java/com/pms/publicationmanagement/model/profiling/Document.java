@@ -3,6 +3,7 @@ package com.pms.publicationmanagement.model.profiling;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,8 +26,15 @@ public class Document {
     private UUID id;
     private String title;
     private String publicationDate;
+
+    @Builder.Default
     @ManyToMany
-    private List<Author> authors;
+    @JoinTable(
+            name = "document_authors",
+            joinColumns = @JoinColumn(name = "document_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors = new ArrayList<>();
 
     private String issued;
 

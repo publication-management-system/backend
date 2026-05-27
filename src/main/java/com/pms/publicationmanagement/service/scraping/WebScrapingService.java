@@ -3,16 +3,11 @@ package com.pms.publicationmanagement.service.scraping;
 import com.pms.publicationmanagement.dto.ScrapingRequestDto;
 import com.pms.publicationmanagement.dto.ScrapingSessionDto;
 import com.pms.publicationmanagement.mapper.ScrapingSessionMapper;
-import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.model.scraping.ScrapingSessionStatus;
-import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
-import com.pms.publicationmanagement.repository.ScrapingSessionRepository;
-import com.pms.publicationmanagement.service.scraping.dblp.DblpScrapingService;
+import com.pms.publicationmanagement.repository.scraping.ScrapingSessionRepository;
 import com.pms.publicationmanagement.service.scraping.googlescholar.GoogleScholarScrapingService;
-import com.pms.publicationmanagement.service.scraping.webofscience.WosScrapingService;
 import lombok.RequiredArgsConstructor;
-import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

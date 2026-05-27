@@ -8,7 +8,8 @@ import com.pms.publicationmanagement.model.scraping.payloads.AuthorProfilePayloa
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
 import com.pms.publicationmanagement.repository.AuthorRepository;
-import com.pms.publicationmanagement.repository.ScrapingQueueItemsRepository;
+import com.pms.publicationmanagement.repository.scraping.ScrapingEventRepository;
+import com.pms.publicationmanagement.repository.scraping.ScrapingQueueItemsRepository;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 import com.pms.publicationmanagement.service.scraping.dto.UrlPayload;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,20 +31,20 @@ public class AuthorTransformer implements ITransformer {
     private final ScrapingQueueItemsRepository scrapingQueueItemsRepository;
 
     public void save(ScrapingQueueItem scrapingRequest, ScrapingResponse scrapingResponse, DataSourceType providerType) {
-        var payload = new Gson().fromJson(scrapingResponse.getData(), AuthorProfilePayload.class);
+        var payload = GSON.fromJson(scrapingResponse.getData(), AuthorProfilePayload.class);
 
-        var existingAuthor = authorRepository.findExisting(payload.getInternalRefId(), payload.getProviderId())
-                .orElse(null);
+        var existingAuthor = findExistingAuthor(providerType, payload.getProviderId()).orElse(null);
+
+        Author author;
 
         if (existingAuthor == null) {
-            var newAuthor = toAuthor(payload, providerType);
-            var saved = authorRepository.save(newAuthor);
-            enqueueNextItems(scrapingRequest, scrapingResponse, saved.getId().toString());
-            return;
+            author = authorRepository.save(toAuthor(payload, providerType));
+        } else {
+            updateExisting(existingAuthor, payload);
+            author = authorRepository.save(existingAuthor);
         }
 
-        updateExisting(existingAuthor, payload);
-        enqueueNextItems(scrapingRequest, scrapingResponse, existingAuthor.getId().toString());
+        enqueueNextItems(scrapingRequest, scrapingResponse, author.getId().toString());
     }
 
     private static Author toAuthor(AuthorProfilePayload profile, DataSourceType providerType) {
@@ -53,10 +55,13 @@ public class AuthorTransformer implements ITransformer {
                 .middleName(profile.getMiddleName())
                 .lastName(profile.getLastName())
                 .imageUrl(profile.getImageUrl())
+                .institution(profile.getInstitution())
                 .topics(String.join(",", profile.getTopicElements()))
                 .googleScholarId(DataSourceType.GOOGLE_SCHOLAR == providerType ? profile.getProviderId() : null)
                 .dblpId(DataSourceType.DBLP == providerType ? profile.getProviderId() : null)
                 .wosId(DataSourceType.WEB_OF_SCIENCE == providerType ? profile.getProviderId() : null)
+                .h_index(profile.getH_index())
+                .i10_index(profile.getI10_index())
                 .build();
     }
 
@@ -66,19 +71,27 @@ public class AuthorTransformer implements ITransformer {
         }
 
         if (author.getMiddleName() == null && profile.getMiddleName() != null) {
-            author.setFirstName(profile.getMiddleName());
+            author.setMiddleName(profile.getMiddleName());
         }
 
         if (author.getLastName() == null && profile.getLastName() != null) {
-            author.setFirstName(profile.getLastName());
+            author.setLastName(profile.getLastName());
         }
 
         if (author.getInstitution() == null && profile.getInstitution() != null) {
-            author.setFirstName(profile.getInstitution());
+            author.setInstitution(profile.getInstitution());
         }
 
         if (author.getInstitutionMail() == null && profile.getEmail() != null) {
-            author.setFirstName(profile.getEmail());
+            author.setInstitutionMail(profile.getEmail());
+        }
+
+        if (author.getImageUrl() == null && profile.getImageUrl() != null) {
+            author.setImageUrl(profile.getImageUrl());
+        }
+
+        if ((author.getTopics() == null || author.getTopics().isBlank()) && profile.getTopicElements() != null) {
+            author.setTopics(String.join(",", profile.getTopicElements()));
         }
     }
 
@@ -106,4 +119,12 @@ public class AuthorTransformer implements ITransformer {
         scrapingQueueItemsRepository.saveAll(toSave);
     }
 
+    public Optional<Author> findExistingAuthor(DataSourceType providerType, String providerId) {
+        return switch (providerType) {
+            case GOOGLE_SCHOLAR -> authorRepository.findByGoogleScholarId(providerId);
+            case DBLP -> authorRepository.findByDblpId(providerId);
+            case WEB_OF_SCIENCE -> authorRepository.findByWosId(providerId);
+            default -> throw new RuntimeException("Invalid provider");
+        };
+    }
 }

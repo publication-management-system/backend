@@ -9,7 +9,7 @@ import com.pms.publicationmanagement.model.scraping.ScrapedEntity;
 import com.pms.publicationmanagement.model.scraping.ScrapedEntityType;
 import com.pms.publicationmanagement.model.scraping.ScrapingSession;
 import com.pms.publicationmanagement.model.scraping.payloads.DocumentPayload;
-import com.pms.publicationmanagement.repository.ScrapedEntityRepository;
+import com.pms.publicationmanagement.repository.scraping.ScrapedEntityRepository;
 import com.pms.publicationmanagement.service.scraping.IWebScrapingStep;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

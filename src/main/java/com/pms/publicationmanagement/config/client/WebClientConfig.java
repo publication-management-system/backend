@@ -8,6 +8,8 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import java.util.Objects;
+
 
 @Configuration
 public class WebClientConfig {
@@ -23,8 +25,8 @@ public class WebClientConfig {
 
     @Bean
     public WebClient scrapingServiceWebClient() {
-        return WebClient.builder()
-                .baseUrl(scrapingServiceBaseUrl)
+        return Objects.requireNonNull(WebClient.builder()
+                        .baseUrl(scrapingServiceBaseUrl))
                 .build();
     }
 

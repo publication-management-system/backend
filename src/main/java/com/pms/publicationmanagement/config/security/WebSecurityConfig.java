@@ -28,8 +28,14 @@ public class WebSecurityConfig {
         http.cors(cors -> cors.configurationSource(httpServletRequest -> corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/session/**", "swagger-ui/**", "/swagger-ui/**",
-                                    "v3/api-docs/**", "/v3/api-docs/**", "/resources/profile/**")
+                    registry.requestMatchers(
+                                    "/session/**",
+                                    "/swagger-ui/**",
+                                    "/v3/api-docs/**",
+                                    "/resources/profile/**",
+                                    "/api/search/**",
+                                    "/api/public/**"
+                            )
                             .permitAll()
                             .anyRequest().authenticated();
                 })
@@ -43,7 +49,7 @@ public class WebSecurityConfig {
     CorsConfiguration corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
