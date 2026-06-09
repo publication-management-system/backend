@@ -22,9 +22,21 @@ public interface AuthorRepository extends JpaRepository<Author, UUID> {
 
     Author findByInstitutionMail(String institutionMail);
 
-    @Query("select a from Author a where a.googleScholarId = :providerId or a.dblpId = :providerId " +
-            "or a.wosId = :providerId or a.internalRefId = :internalRefId")
-    Optional<Author> findExisting(String internalRefId, String providerId);
+    @Query(
+            value = """
+                    SELECT *
+                    FROM author a
+                    WHERE a.google_scholar_id = :providerId
+                       OR a.dblp_id = :providerId
+                       OR a.wos_id = :providerId
+                            OR levenshtein(:name, a.name) < :threshold
+                       ORDER BY levenshtein(:name, a.name) ASC
+                       LIMIT 1
+                    """,
+            nativeQuery = true
+    )
+    Optional<Author> findExisting(@Param("providerId") String providerId, @Param("name") String name,
+                              @Param("threshold") Long threshold);
 
     @Query(value = "SELECT * FROM author WHERE MATCH(name) AGAINST (CONCAT(:name, '*') IN BOOLEAN MODE) OR SOUNDEX(name) = SOUNDEX(:name)", nativeQuery = true)
     Page<Author> searchAuthorByName(@Param("name") String name, Pageable pageable);
@@ -36,8 +48,8 @@ public interface AuthorRepository extends JpaRepository<Author, UUID> {
     Optional<Author> findByWosId(String providerId);
 
     @Query("""
-           select distinct a from Author a
-           left join fetch a.documents
-           """)
+            select distinct a from Author a
+            left join fetch a.documents
+            """)
     List<Author> findAllWithDocuments();
 }

@@ -5,12 +5,14 @@ import com.pms.publicationmanagement.dto.scraping.ScrapingNextInQueueResponseDto
 import com.pms.publicationmanagement.dto.scraping.ScrapingStatusResponseDto;
 import com.pms.publicationmanagement.dto.stats.ScrapingStatsDto;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
-import com.pms.publicationmanagement.service.scraping.ScrapingService2;
+import com.pms.publicationmanagement.service.scraping.ScrapingService;
+import com.pms.publicationmanagement.service.scraping.dto.ScrapingFailedItemDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,11 +20,11 @@ import java.util.UUID;
 @RequestMapping("/api/scraping")
 public class ScrapingController {
 
-    private final ScrapingService2 scrapingService2;
+    private final ScrapingService scrapingService;
 
     @PostMapping("/enqueue")
     public ScrapingStatusResponseDto enqueueScraping(@RequestBody @Valid EnqueueScrapingRequestDto enqueueScrapingRequestDto) {
-        scrapingService2.enqueueScrapingStartingFrom(
+        scrapingService.enqueueScrapingStartingFrom(
                 enqueueScrapingRequestDto.getFirstName(),
                 enqueueScrapingRequestDto.getLastName(),
                 enqueueScrapingRequestDto.getInstitutionId(),
@@ -33,18 +35,18 @@ public class ScrapingController {
         return new ScrapingStatusResponseDto("Enqueued");
     }
 
-    @GetMapping("/next-in-queue")
-    public ScrapingNextInQueueResponseDto getNextInQueueItems(@RequestParam UUID userId) {
-        Page<ScrapingQueueItem> nextEnqueuedItemsByUserId = scrapingService2.getNextEnqueuedItemsByUserId(userId);
+    @GetMapping("/failed-items")
+    public List<ScrapingFailedItemDto> getNextInQueueItems() {
+        return scrapingService.getFailedItems(0, 10);
+    }
 
-        return new ScrapingNextInQueueResponseDto(
-                nextEnqueuedItemsByUserId.stream().toList(),
-                nextEnqueuedItemsByUserId.getTotalElements()
-        );
+    @PostMapping("/retry-failed-items")
+    public void retryFailedItems() {
+        scrapingService.retryFailedItems();
     }
 
     @GetMapping("/stats")
     public ScrapingStatsDto getStats() {
-        return scrapingService2.getStats();
+        return scrapingService.getStats();
     }
 }

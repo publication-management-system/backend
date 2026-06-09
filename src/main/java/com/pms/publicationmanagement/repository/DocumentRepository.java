@@ -22,16 +22,27 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
 
     List<Document> findByPublicationDate(String publicationDate);
 
-    //e mai ok sa sa fie param List<String> names?
     List<Document> findByAuthors(List<Author> authorList);
 
     List<Document> findByIssued(String issued);
 
     List<Document> findByPublisher(String publisher);
 
-    @Query("select d from Document d where d.googleScholarId = :providerId or d.dblpId = :providerId " +
-            "or d.wosId = :providerId or d.internalRefId = :internalRefId")
-    Optional<Author> findExisting(String internalRefId, String providerId);
+    @Query(
+            value = """
+                    SELECT *
+                    FROM document d
+                    WHERE d.google_scholar_id = :providerId
+                       OR d.dblp_id = :providerId
+                       OR d.wos_id = :providerId
+                            OR levenshtein(:name, d.title) < :threshold
+                    ORDER BY levenshtein(:name, d.title) ASC
+                    LIMIT 1
+                    """,
+            nativeQuery = true
+    )
+    Optional<Document> findExisting(@Param("providerId") String providerId, @Param("name") String name,
+                                    @Param("threshold") Long threshold);
 
     @Query(value = "SELECT * FROM document WHERE MATCH(title) AGAINST (CONCAT(:title, '*') IN BOOLEAN MODE) OR SOUNDEX(title) = SOUNDEX(:title)", nativeQuery = true)
     Page<Document> searchDocumentsByName(@Param("title") String title, Pageable pageRequest);
@@ -45,16 +56,16 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
     Optional<Document> findByWosId(String providerId);
 
     @Query(value = """
-        SELECT
-            SUBSTRING(d.publication_date, 1, 4) AS year,
-            COUNT(DISTINCT d.id) AS documentCount
-        FROM document d
-        JOIN document_authors da
-            ON da.document_id = d.id
-        WHERE da.author_id = :authorId
-          AND d.publication_date IS NOT NULL
-        GROUP BY SUBSTRING(d.publication_date, 1, 4)
-        ORDER BY year
-    """, nativeQuery = true)
+                SELECT
+                    SUBSTRING(d.publication_date, 1, 4) AS year,
+                    COUNT(DISTINCT d.id) AS documentCount
+                FROM document d
+                JOIN document_authors da
+                    ON da.document_id = d.id
+                WHERE da.author_id = :authorId
+                  AND d.publication_date IS NOT NULL
+                GROUP BY SUBSTRING(d.publication_date, 1, 4)
+                ORDER BY year
+            """, nativeQuery = true)
     List<DocumentsByYearProjection> findDocStatsByYearAndAuthorId(UUID authorId);
 }

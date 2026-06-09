@@ -1,13 +1,12 @@
 package com.pms.publicationmanagement.service.scraping.transformation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pms.publicationmanagement.model.profiling.Citation;
 import com.pms.publicationmanagement.model.profiling.Document;
-import com.pms.publicationmanagement.model.scraping.DataSourceType;
-import com.pms.publicationmanagement.model.scraping.payloads.CitationsGsPayload;
+import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
+import com.pms.publicationmanagement.model.scraping.payloads.CitationsPayload;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.repository.CitationRepository;
 import com.pms.publicationmanagement.repository.DocumentRepository;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,21 +22,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class CitationsTransformer implements ITransformer {
-    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private final CitationRepository citationRepository;
     private final DocumentRepository documentRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void save(
-            ScrapingQueueItem scrapingRequest,
-            ScrapingResponse scrapingResponse,
-            DataSourceType providerType
-    ) {
-        List<CitationsGsPayload> payloadCitations = GSON.fromJson(
-                scrapingResponse.getData(),
-                new TypeToken<List<CitationsGsPayload>>() {}.getType()
-        );
+    public void save(ScrapingQueueItem scrapingRequest, ScrapingResponse scrapingResponse, DataSourceType providerType) {
+        List<CitationsPayload> payloadCitations = null;
+        try {
+            payloadCitations = objectMapper.readValue(
+                    scrapingResponse.getData(),
+                    new TypeReference<>() {}
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         UUID documentId = UUID.fromString(scrapingResponse.getRefId());
 
@@ -57,7 +56,7 @@ public class CitationsTransformer implements ITransformer {
         }
     }
 
-    private static Citation toCitation(CitationsGsPayload payload, Document document) {
+    private static Citation toCitation(CitationsPayload payload, Document document) {
         return Citation.builder()
                 .id(UUID.randomUUID())
                 .title(payload.getTitle())

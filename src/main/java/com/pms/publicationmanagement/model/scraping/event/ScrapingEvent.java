@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.model.scraping.event;
 
-import com.pms.publicationmanagement.model.scraping.DataSourceType;
-import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
+import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
+import com.pms.publicationmanagement.model.scraping.enums.ScrapingQueueItemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

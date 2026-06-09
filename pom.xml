@@ -93,15 +93,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jobrunr</groupId>
-            <artifactId>jobrunr-spring-boot-3-starter</artifactId>
-            <version>6.1.4</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.gephi</groupId>
             <artifactId>gephi-toolkit</artifactId>
             <version>0.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
     </dependencies>
 

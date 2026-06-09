@@ -1,4 +1,4 @@
-package com.pms.publicationmanagement.model.scraping;
+package com.pms.publicationmanagement.model.scraping.enums;
 
 public enum DataSourceType {
     GOOGLE_SCHOLAR,

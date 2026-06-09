@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScrapingStatsDto {
-    private List<ScrapingItemByMinute> lastTenMinutes;
-    private List<ScrapingCountsByProvider> scrapingCountsByProvider;
+public class ScrapingCountsByProvider {
+    private String provider;
+    private Long count;
 }

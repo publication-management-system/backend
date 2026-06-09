@@ -13,8 +13,8 @@ public class ScrapingTaskExecutorConfig {
     @Bean(name = "scrapingTaskExecutor")
     public TaskExecutor scrapingTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(5);
-        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setCorePoolSize(50);
+        taskExecutor.setMaxPoolSize(100);
         taskExecutor.setQueueCapacity(200);
 
         taskExecutor.setThreadNamePrefix("scraping-executor-async-");

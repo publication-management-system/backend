@@ -1,7 +1,7 @@
 package com.pms.publicationmanagement.repository.scraping;
 
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
-import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
+import com.pms.publicationmanagement.model.scraping.enums.ScrapingQueueItemType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;

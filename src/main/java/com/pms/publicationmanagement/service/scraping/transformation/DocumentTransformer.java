@@ -1,13 +1,13 @@
 package com.pms.publicationmanagement.service.scraping.transformation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pms.publicationmanagement.model.profiling.Author;
 import com.pms.publicationmanagement.model.profiling.Document;
-import com.pms.publicationmanagement.model.scraping.DataSourceType;
+import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.payloads.DocumentPayload;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
-import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
+import com.pms.publicationmanagement.model.scraping.enums.ScrapingQueueItemType;
 import com.pms.publicationmanagement.repository.AuthorRepository;
 import com.pms.publicationmanagement.repository.DocumentRepository;
 import com.pms.publicationmanagement.repository.scraping.ScrapingQueueItemsRepository;
@@ -27,11 +27,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentTransformer implements ITransformer {
-    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    public static final Long THRESHOLD_LEVENSHTEIN_DOCUMENTS = 12L;
 
     private final DocumentRepository documentRepository;
     private final AuthorRepository authorRepository;
     private final ScrapingQueueItemsRepository scrapingQueueItemsRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -40,8 +41,12 @@ public class DocumentTransformer implements ITransformer {
             ScrapingResponse scrapingResponse,
             DataSourceType providerType
     ) {
-        var payload = GSON.fromJson(scrapingResponse.getData(), DocumentPayload.class);
-
+        DocumentPayload payload = null;
+        try {
+            payload = objectMapper.readValue(scrapingResponse.getData(), DocumentPayload.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         log.info(
                 "Mapped DocumentPayload title={}, issued={}, volume={}, pages={}, publisher={}, providerId={}, link={}",
@@ -59,14 +64,16 @@ public class DocumentTransformer implements ITransformer {
         var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new IllegalStateException("Author not found: " + authorId));
 
-        var existingDocument = findExistingDocument(providerType, payload.getProviderId()).orElse(null);
+        var existingDocument = documentRepository
+                .findExisting(payload.getProviderId(), payload.getTitle(), THRESHOLD_LEVENSHTEIN_DOCUMENTS)
+                .orElse(null);
 
         Document document;
 
         if (existingDocument == null) {
             document = documentRepository.save(toDocument(payload, providerType));
         } else {
-            updateExisting(existingDocument, payload);
+            updateExisting(existingDocument, payload, scrapingRequest.getProvider());
             document = existingDocument;
         }
 
@@ -105,7 +112,7 @@ public class DocumentTransformer implements ITransformer {
                 .build();
     }
 
-    private void updateExisting(Document document, DocumentPayload payload) {
+    private void updateExisting(Document document, DocumentPayload payload, DataSourceType provider) {
         if (document.getTitle() == null && payload.getTitle() != null) {
             document.setTitle(payload.getTitle());
         }
@@ -120,6 +127,18 @@ public class DocumentTransformer implements ITransformer {
 
         if (document.getIssued() == null && payload.getIssued() != null) {
             document.setIssued(payload.getIssued());
+        }
+
+        if (document.getGoogleScholarId() == null && payload.getProviderId() != null && provider == DataSourceType.GOOGLE_SCHOLAR) {
+            document.setGoogleScholarId(payload.getProviderId());
+        }
+
+        if (document.getDblpId() == null && payload.getProviderId() != null && provider == DataSourceType.DBLP) {
+            document.setDblpId(payload.getProviderId());
+        }
+
+        if (document.getWosId() == null && payload.getProviderId() != null && provider == DataSourceType.WEB_OF_SCIENCE) {
+            document.setWosId(payload.getProviderId());
         }
 
         if (document.getVolume() == null && payload.getVolume() != null) {
@@ -151,10 +170,16 @@ public class DocumentTransformer implements ITransformer {
         var toSave = new ArrayList<ScrapingQueueItem>();
 
         for (var toEnqueue : response.getQueueItems()) {
+            String payload = null;
+            try {
+                payload = objectMapper.writeValueAsString(new UrlPayload(toEnqueue.getLink()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             toSave.add(
                     ScrapingQueueItem.builder()
                             .type(ScrapingQueueItemType.valueOf(toEnqueue.getType()))
-                            .payload(GSON.toJson(new UrlPayload(toEnqueue.getLink())))
+                            .payload(payload)
                             .refId(internalDocumentId)
                             .scrapingLink(toEnqueue.getLink())
                             .createdAt(LocalDateTime.now())

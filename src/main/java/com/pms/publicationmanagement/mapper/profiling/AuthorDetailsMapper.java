@@ -27,6 +27,8 @@ public class AuthorDetailsMapper {
         dto.setInternalRefId(author.getInternalRefId());
         dto.setImageUrl(author.getImageUrl());
         dto.setTopics(author.getTopics());
+        dto.setHIndex(author.getHIndex());
+        dto.setI10Index(author.getI10Index());
 
         return dto;
     }

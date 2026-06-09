@@ -44,10 +44,12 @@ public class Author {
     private String imageUrl;
 
     private String topics;
-    
-    private String h_index;
 
-    private String i10_index;
+    @Column(name = "h_index")
+    private String hIndex;
+
+    @Column(name = "i10_index")
+    private String i10Index;
 
     @Builder.Default
     @ManyToMany(mappedBy = "authors")

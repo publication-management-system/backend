@@ -2,6 +2,7 @@ package com.pms.publicationmanagement.repository.scraping;
 
 import com.pms.publicationmanagement.model.scraping.event.ScrapingEvent;
 import com.pms.publicationmanagement.repository.projections.ScrapingCountsByMinute;
+import com.pms.publicationmanagement.repository.projections.ScrapingCountsByProviderProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +26,14 @@ public interface ScrapingEventRepository extends JpaRepository<ScrapingEvent, Lo
     List<ScrapingCountsByMinute> getScrapedEventsByMinute(
             @Param("from") LocalDateTime from
     );
+
+    @Query(value = """
+        SELECT 
+            provider AS provider,
+            COUNT(*) AS count
+        FROM scraping_events
+        GROUP BY provider
+        ORDER BY provider
+        """, nativeQuery = true)
+    List<ScrapingCountsByProviderProjection> getCountsByProvider();
 }

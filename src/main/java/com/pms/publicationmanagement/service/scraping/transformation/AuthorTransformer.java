@@ -1,14 +1,13 @@
 package com.pms.publicationmanagement.service.scraping.transformation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pms.publicationmanagement.model.profiling.Author;
-import com.pms.publicationmanagement.model.scraping.DataSourceType;
+import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.payloads.AuthorProfilePayload;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
-import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItemType;
+import com.pms.publicationmanagement.model.scraping.enums.ScrapingQueueItemType;
 import com.pms.publicationmanagement.repository.AuthorRepository;
-import com.pms.publicationmanagement.repository.scraping.ScrapingEventRepository;
 import com.pms.publicationmanagement.repository.scraping.ScrapingQueueItemsRepository;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 import com.pms.publicationmanagement.service.scraping.dto.UrlPayload;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,21 +24,31 @@ import java.util.UUID;
 @Slf4j
 public class AuthorTransformer implements ITransformer {
 
-    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    public static final Long TRESHOLD_DISTANCE_LEVENSHTEIN = 8L;
+
     private final AuthorRepository authorRepository;
     private final ScrapingQueueItemsRepository scrapingQueueItemsRepository;
+    private final ObjectMapper objectMapper;
 
     public void save(ScrapingQueueItem scrapingRequest, ScrapingResponse scrapingResponse, DataSourceType providerType) {
-        var payload = GSON.fromJson(scrapingResponse.getData(), AuthorProfilePayload.class);
+        AuthorProfilePayload payload = null;
 
-        var existingAuthor = findExistingAuthor(providerType, payload.getProviderId()).orElse(null);
+        try {
+            payload = objectMapper.readValue(scrapingResponse.getData(), AuthorProfilePayload.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        var existingAuthor = authorRepository.findExisting(payload.getProviderId(), payload.getAuthorName(),
+                        TRESHOLD_DISTANCE_LEVENSHTEIN)
+                .orElse(null);
 
         Author author;
 
         if (existingAuthor == null) {
             author = authorRepository.save(toAuthor(payload, providerType));
         } else {
-            updateExisting(existingAuthor, payload);
+            updateExisting(existingAuthor, payload, scrapingRequest.getProvider());
             author = authorRepository.save(existingAuthor);
         }
 
@@ -60,12 +68,12 @@ public class AuthorTransformer implements ITransformer {
                 .googleScholarId(DataSourceType.GOOGLE_SCHOLAR == providerType ? profile.getProviderId() : null)
                 .dblpId(DataSourceType.DBLP == providerType ? profile.getProviderId() : null)
                 .wosId(DataSourceType.WEB_OF_SCIENCE == providerType ? profile.getProviderId() : null)
-                .h_index(profile.getH_index())
-                .i10_index(profile.getI10_index())
+                .hIndex(profile.getH_index())
+                .i10Index(profile.getI10_index())
                 .build();
     }
 
-    private void updateExisting(Author author, AuthorProfilePayload profile) {
+    private void updateExisting(Author author, AuthorProfilePayload profile, DataSourceType provider) {
         if (author.getFirstName() == null && profile.getFirstName() != null) {
             author.setFirstName(profile.getFirstName());
         }
@@ -78,12 +86,32 @@ public class AuthorTransformer implements ITransformer {
             author.setLastName(profile.getLastName());
         }
 
+        if (author.getGoogleScholarId() == null && profile.getProviderId() != null && provider == DataSourceType.GOOGLE_SCHOLAR) {
+            author.setGoogleScholarId(profile.getProviderId());
+        }
+
+        if (author.getDblpId() == null && profile.getProviderId() != null && provider == DataSourceType.DBLP) {
+            author.setDblpId(profile.getProviderId());
+        }
+
+        if (author.getWosId() == null && profile.getProviderId() != null && provider == DataSourceType.WEB_OF_SCIENCE) {
+            author.setWosId(profile.getProviderId());
+        }
+
+        if (author.getInstitutionRole() == null && profile.getInstitutionRole() != null) {
+            author.setInstitutionRole(profile.getInstitutionRole());
+        }
+
         if (author.getInstitution() == null && profile.getInstitution() != null) {
             author.setInstitution(profile.getInstitution());
         }
 
         if (author.getInstitutionMail() == null && profile.getEmail() != null) {
             author.setInstitutionMail(profile.getEmail());
+        }
+
+        if (author.getInternalRefId() == null && profile.getInternalRefId() != null) {
+            author.setInternalRefId(profile.getInternalRefId());
         }
 
         if (author.getImageUrl() == null && profile.getImageUrl() != null) {
@@ -99,11 +127,18 @@ public class AuthorTransformer implements ITransformer {
                                   ScrapingResponse response,
                                   String internalRefId) {
         var toSave = new ArrayList<ScrapingQueueItem>();
+
         for (var toEnqueue : response.getQueueItems()) {
+            String payload = null;
+            try {
+                payload = objectMapper.writeValueAsString(new UrlPayload(toEnqueue.getLink()));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             toSave.add(
                     ScrapingQueueItem.builder()
                             .type(ScrapingQueueItemType.valueOf(toEnqueue.getType()))
-                            .payload(GSON.toJson(new UrlPayload(toEnqueue.getLink())))
+                            .payload(payload)
                             .refId(internalRefId)
                             .scrapingLink(toEnqueue.getLink())
                             .createdAt(LocalDateTime.now())
@@ -117,14 +152,5 @@ public class AuthorTransformer implements ITransformer {
         }
 
         scrapingQueueItemsRepository.saveAll(toSave);
-    }
-
-    public Optional<Author> findExistingAuthor(DataSourceType providerType, String providerId) {
-        return switch (providerType) {
-            case GOOGLE_SCHOLAR -> authorRepository.findByGoogleScholarId(providerId);
-            case DBLP -> authorRepository.findByDblpId(providerId);
-            case WEB_OF_SCIENCE -> authorRepository.findByWosId(providerId);
-            default -> throw new RuntimeException("Invalid provider");
-        };
     }
 }

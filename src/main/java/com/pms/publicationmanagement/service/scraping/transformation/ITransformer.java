@@ -1,6 +1,6 @@
 package com.pms.publicationmanagement.service.scraping.transformation;
 
-import com.pms.publicationmanagement.model.scraping.DataSourceType;
+import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
 import com.pms.publicationmanagement.model.scraping.queue.ScrapingQueueItem;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 

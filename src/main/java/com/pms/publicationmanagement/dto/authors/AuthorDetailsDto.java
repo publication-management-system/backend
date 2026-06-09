@@ -24,4 +24,6 @@ public class AuthorDetailsDto {
     private String internalRefId;
     private String imageUrl;
     private String topics;
+    private String hIndex;
+    private String i10Index;
 }

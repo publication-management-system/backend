@@ -1,0 +1,64 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1779877963706-1" author="Cristian Ginju">
+        <createProcedure>
+            <![CDATA[
+            CREATE FUNCTION levenshtein(s1 VARCHAR(255), s2 VARCHAR(255))
+                RETURNS INT
+                DETERMINISTIC
+            BEGIN
+                DECLARE s1_len, s2_len, i, j, c, c_temp, cost INT;
+                DECLARE s1_char CHAR;
+                DECLARE cv0, cv1 VARBINARY(256);
+
+                SET s1_len = CHAR_LENGTH(s1),
+                    s2_len = CHAR_LENGTH(s2),
+                    cv1 = 0x00,
+                    j = 1,
+                    i = 1,
+                    c = 0;
+
+                IF s1 = s2 THEN
+                    RETURN 0;
+                ELSEIF s1_len = 0 THEN
+                    RETURN s2_len;
+                ELSEIF s2_len = 0 THEN
+                    RETURN s1_len;
+                        END IF;
+
+                WHILE j <= s2_len DO
+                        SET cv1 = CONCAT(cv1, CHAR(j));
+                        SET j = j + 1;
+                        END WHILE;
+
+                WHILE i <= s1_len DO
+                        SET s1_char = SUBSTRING(s1, i, 1);
+                        SET c = i;
+                        SET cv0 = CHAR(i);
+                        SET j = 1;
+
+                        WHILE j <= s2_len DO
+                                SET c = c + 1;
+                                SET cost = IF(s1_char = SUBSTRING(s2, j, 1), 0, 1);
+
+                                SET c_temp = ORD(SUBSTRING(cv1, j, 1)) + cost;
+                                SET c = LEAST(c, c_temp, c + 1);
+
+                                SET cv0 = CONCAT(cv0, CHAR(c));
+                                SET j = j + 1;
+                        END WHILE;
+
+                        SET cv1 = cv0;
+                        SET i = i + 1;
+                        END WHILE;
+
+                        RETURN c;
+            END
+            ]]>
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>
