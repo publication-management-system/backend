@@ -8,4 +8,5 @@
     <include file="/database/01-init-database-changelog.xml"/>
     <include file="/database/02-add-search-index.xml"/>
     <include file="/database/03-add-levenshtein-distance.xml"/>
+    <include file="/database/04-add-task-resources.xml"/>
 </databaseChangeLog>

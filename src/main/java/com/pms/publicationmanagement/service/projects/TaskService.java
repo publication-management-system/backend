@@ -1,12 +1,14 @@
 package com.pms.publicationmanagement.service.projects;
 
-import com.pms.publicationmanagement.dto.projects.TaskDto;
+import com.pms.publicationmanagement.dto.projects.*;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
-import com.pms.publicationmanagement.model.user.Project;
-import com.pms.publicationmanagement.model.user.Task;
-import com.pms.publicationmanagement.model.user.TaskState;
+import com.pms.publicationmanagement.model.projects.Project;
+import com.pms.publicationmanagement.model.projects.Task;
+import com.pms.publicationmanagement.model.projects.TaskResource;
+import com.pms.publicationmanagement.model.projects.TaskState;
 import com.pms.publicationmanagement.repository.ProjectRepository;
 import com.pms.publicationmanagement.repository.TaskRepository;
+import com.pms.publicationmanagement.repository.TaskResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskResourceRepository taskResourceRepository;
     private final ProjectRepository projectRepository;
 
     public TaskDto addTask(UUID projectId, String title, String description) {
@@ -27,7 +30,6 @@ public class TaskService {
                 .orElseThrow(() -> new IllegalArgumentException("Project not found"));
 
         newTask.setProject(project);
-        newTask.setId(UUID.randomUUID());
         newTask.setTitle(title);
         newTask.setDescription(description);
         newTask.setState(TaskState.Backlog);
@@ -94,5 +96,51 @@ public class TaskService {
 
         taskRepository.save(task);
         return TaskDtoMapper.toTaskDto(task);
+    }
+
+    public TaskWithResourcesDto getTaskWithResourcesForUser(UUID taskId, UUID projectId, UUID userId) {
+        Task task = taskRepository.findTaskForUser(taskId, projectId, userId);
+
+        if (task == null) {
+            throw new RuntimeException("Task not found");
+        }
+
+        return TaskDtoMapper.toTaskWithResourcesDto(task);
+    }
+
+    public TaskResourceDto saveTaskResource(UUID taskId, CreateTaskResourceDto request) {
+        Task task = taskRepository.findById(taskId).orElse(null);
+
+        if (task == null) {
+            throw new RuntimeException("Task with id not found");
+        }
+
+        TaskResource taskResource = new TaskResource();
+        taskResource.setData(request.getData());
+        taskResource.setResourceName(request.getResourceName());
+        taskResource.setResourceType(request.getResourceType());
+        taskResource.setUrl(request.getUrl());
+
+        task.addResource(taskResource);
+
+        taskRepository.save(task);
+
+        return TaskDtoMapper.toTaskResourceDto(taskResource);
+    }
+
+    public TaskResourceDto updateTaskResource(UUID taskId, UUID resourceId, UpdateTaskResourceDto request) {
+        TaskResource taskResource = taskResourceRepository.findByIdAndTaskId(resourceId, taskId);
+
+        if (taskResource == null) {
+            throw new RuntimeException("Task with id not found");
+        }
+
+        taskResource.setData(request.getData());
+        taskResource.setResourceName(request.getResourceName());
+        taskResource.setUrl(request.getUrl());
+
+        taskResourceRepository.save(taskResource);
+
+        return TaskDtoMapper.toTaskResourceDto(taskResource);
     }
 }

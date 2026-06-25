@@ -1,4 +1,4 @@
-package com.pms.publicationmanagement.model.user;
+package com.pms.publicationmanagement.model.projects;
 
 public enum TaskState {
     Backlog,

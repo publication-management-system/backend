@@ -2,7 +2,7 @@ package com.pms.publicationmanagement.mapper;
 
 import com.pms.publicationmanagement.dto.UserDto;
 import com.pms.publicationmanagement.dto.projects.ProjectDto;
-import com.pms.publicationmanagement.model.user.Project;
+import com.pms.publicationmanagement.model.projects.Project;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

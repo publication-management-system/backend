@@ -1,11 +1,11 @@
-package com.pms.publicationmanagement.model.user;
+package com.pms.publicationmanagement.model.projects;
 
+import com.pms.publicationmanagement.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,4 +34,8 @@ public class Project {
     private UUID projectOwnerId;
 
     private LocalDateTime createdAt;
+
+    public void addUser(User u) {
+        users.add(u);
+    }
 }

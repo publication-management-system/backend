@@ -1,9 +1,8 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.dto.projects.CreateTaskDto;
-import com.pms.publicationmanagement.dto.projects.TaskDto;
+import com.pms.publicationmanagement.dto.projects.*;
 import com.pms.publicationmanagement.mapper.TaskDtoMapper;
-import com.pms.publicationmanagement.model.user.TaskState;
+import com.pms.publicationmanagement.model.projects.TaskState;
 import com.pms.publicationmanagement.service.projects.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -18,7 +17,9 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    public TaskController (TaskService taskService ) {this.taskService = taskService;}
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @PostMapping("/{projectId}")
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
@@ -42,6 +43,29 @@ public class TaskController {
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
     public List<TaskDto> findTasksFromProject(@PathVariable UUID id) {
         return TaskDtoMapper.toTaskDtoList(taskService.findUsersFromInstitution(id));
+    }
+
+    @GetMapping("/with-resources/{id}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public TaskWithResourcesDto getTaskWithResources(@PathVariable UUID id,
+                                                     @RequestParam UUID projectId,
+                                                     @RequestParam UUID userId) {
+        return taskService.getTaskWithResourcesForUser(id, projectId, userId);
+    }
+
+    @PostMapping("/{id}/resources")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public TaskResourceDto saveTaskResource(@PathVariable UUID id,
+                                            @RequestBody CreateTaskResourceDto taskResourceDto) {
+        return taskService.saveTaskResource(id, taskResourceDto);
+    }
+
+    @PatchMapping("/{id}/resources/{resourceId}")
+    @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
+    public TaskResourceDto updateTaskResource(@PathVariable UUID id,
+                                              @PathVariable UUID resourceId,
+                                              @RequestBody UpdateTaskResourceDto taskResourceDto) {
+        return taskService.updateTaskResource(id, resourceId, taskResourceDto);
     }
 
     @DeleteMapping("/{id}")

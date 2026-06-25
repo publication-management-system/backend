@@ -1,4 +1,4 @@
-package com.pms.publicationmanagement.model.user;
+package com.pms.publicationmanagement.model.projects;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,4 +31,11 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskState state;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="task", cascade = CascadeType.ALL)
+    private List<TaskResource> taskResources;
+
+    public void addResource(TaskResource taskResource) {
+        taskResources.add(taskResource);
+        taskResource.setTask(this);
+    }
 }

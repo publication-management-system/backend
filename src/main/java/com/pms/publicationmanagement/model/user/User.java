@@ -1,6 +1,7 @@
 package com.pms.publicationmanagement.model.user;
 
 
+import com.pms.publicationmanagement.model.projects.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,5 +49,9 @@ public class User {
         } else {
             return String.format("%s %s", firstName, lastName);
         }
+    }
+
+    public void addProject(Project p) {
+        projects.add(p);
     }
 }
