@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddInvitationDto {
-
-
     public String email;
 
     public String institutionId;

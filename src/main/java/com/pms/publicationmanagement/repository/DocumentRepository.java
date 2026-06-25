@@ -35,8 +35,8 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
                     WHERE d.google_scholar_id = :providerId
                        OR d.dblp_id = :providerId
                        OR d.wos_id = :providerId
-                            OR levenshtein(:name, d.title) < :threshold
-                    ORDER BY levenshtein(:name, d.title) ASC
+                            OR levenshtein(LOWER(:name), LOWER(d.title)) < :threshold
+                    ORDER BY levenshtein(LOWER(:name), LOWER(d.title)) ASC
                     LIMIT 1
                     """,
             nativeQuery = true

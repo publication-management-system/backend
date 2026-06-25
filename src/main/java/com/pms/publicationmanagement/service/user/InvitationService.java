@@ -1,6 +1,8 @@
 package com.pms.publicationmanagement.service.user;
 
 import com.pms.publicationmanagement.dto.AddInvitationDto;
+import com.pms.publicationmanagement.dto.InvitationDto;
+import com.pms.publicationmanagement.mapper.InvitationDtoMapper;
 import com.pms.publicationmanagement.model.user.Invitation;
 import com.pms.publicationmanagement.repository.InvitationRepository;
 import com.pms.publicationmanagement.repository.UserRepository;
@@ -22,7 +24,7 @@ public class InvitationService {
 
     private final InvitationRepository invitationRepository;
 
-    public void sendInvitation(AddInvitationDto addInvitationDto) {
+    public InvitationDto sendInvitation(AddInvitationDto addInvitationDto) {
         Invitation invitation = new Invitation();
         UUID id = UUID.randomUUID();
         invitation.setId(id);
@@ -32,6 +34,8 @@ public class InvitationService {
         invitation.setCreatedAt(LocalDateTime.now());
 
         invitationRepository.save(invitation);
+
+        return InvitationDtoMapper.toInvitationDto(invitation);
     }
 
     public List<Invitation> findAll() {

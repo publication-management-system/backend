@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ScrapingQueueItemsRepository extends JpaRepository<ScrapingQueueItem, Long>,
@@ -15,4 +16,6 @@ public interface ScrapingQueueItemsRepository extends JpaRepository<ScrapingQueu
     Page<ScrapingQueueItem> findAllByCreatedById(UUID createdById, PageRequest enqueuedTasksByPriorityPaged);
 
     Page<ScrapingQueueItem> findAllByTypeIn(List<ScrapingQueueItemType> types, PageRequest enqueuedTasksByPriorityPaged);
+
+    List<ScrapingQueueItem> findByPayload(String payload);
 }

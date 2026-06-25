@@ -40,6 +40,8 @@ import java.util.UUID;
 @Slf4j
 public class ScrapingService {
 
+    private static final Long MAX_AUTHORS_IN_QUEUE = 1L;
+
     @Value("${scraping.service.run-api-path}")
     private String scrapingRunApiPath;
 
@@ -64,7 +66,21 @@ public class ScrapingService {
             return;
         }
 
-        for (var item : scrapingItems.getContent()) {
+        List<ScrapingQueueItem> finalItems = new ArrayList<>();
+        long authorCounter = 0L;
+        for (var finalItem : scrapingItems.getContent()) {
+            if ((finalItem.getType() == ScrapingQueueItemType.FIND_AUTHOR
+                    || finalItem.getType() == ScrapingQueueItemType.FIND_AUTHOR_DBLP)) {
+                if (authorCounter < MAX_AUTHORS_IN_QUEUE) {
+                    authorCounter++;
+                    finalItems.add(finalItem);
+                }
+            } else {
+                finalItems.add(finalItem);
+            }
+        }
+
+        for (var item : finalItems) {
             scrapingTaskExecutor.execute(() -> callScrapingService(item));
         }
     }

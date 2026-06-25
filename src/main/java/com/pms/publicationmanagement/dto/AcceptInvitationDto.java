@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class AcceptInvitationDto {
-    public String email;
+    public String emailAddress;
 
     public UUID invitationId;
 

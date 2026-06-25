@@ -1,6 +1,5 @@
 package com.pms.publicationmanagement.controllers;
 
-import com.pms.publicationmanagement.dto.AcceptInvitationDto;
 import com.pms.publicationmanagement.dto.AddUserDto;
 import com.pms.publicationmanagement.dto.UpdatePasswordDto;
 import com.pms.publicationmanagement.dto.UserDto;

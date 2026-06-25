@@ -37,9 +37,4 @@ public class SessionController {
 
         return sessionService.registerUser(registerRequest);
     }
-
-    @PostMapping("/accept-invitation")
-    public UserDto acceptInvitation(@RequestBody AcceptInvitationDto acceptInvitationDto) {
-        return UserDtoMapper.toUserDto(userService.acceptInvitation(acceptInvitationDto));
-    }
 }

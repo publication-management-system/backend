@@ -94,7 +94,7 @@ public class UserService {
                 new RuntimeException("Institution not found"));
         User toBeInvited = new User();
 
-        toBeInvited.setEmail(acceptInvitationDto.email);
+        toBeInvited.setEmail(acceptInvitationDto.emailAddress);
         toBeInvited.setFirstName(acceptInvitationDto.firstName);
         toBeInvited.setMiddleName(acceptInvitationDto.middleName);
         toBeInvited.setLastName(acceptInvitationDto.lastName);

@@ -2,6 +2,7 @@ package com.pms.publicationmanagement.service.scraping.transformation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.pms.publicationmanagement.model.profiling.Author;
 import com.pms.publicationmanagement.model.profiling.Document;
 import com.pms.publicationmanagement.model.scraping.enums.DataSourceType;
@@ -11,6 +12,7 @@ import com.pms.publicationmanagement.model.scraping.enums.ScrapingQueueItemType;
 import com.pms.publicationmanagement.repository.AuthorRepository;
 import com.pms.publicationmanagement.repository.DocumentRepository;
 import com.pms.publicationmanagement.repository.scraping.ScrapingQueueItemsRepository;
+import com.pms.publicationmanagement.service.scraping.dto.FindAuthorPayload;
 import com.pms.publicationmanagement.service.scraping.dto.ScrapingResponse;
 import com.pms.publicationmanagement.service.scraping.dto.UrlPayload;
 import jakarta.transaction.Transactional;
@@ -28,6 +30,7 @@ import java.util.UUID;
 @Slf4j
 public class DocumentTransformer implements ITransformer {
     public static final Long THRESHOLD_LEVENSHTEIN_DOCUMENTS = 12L;
+    public static final Long THRESHOLD_LEVENSHTEIN_DOCUMENTS_COAUTHORS = 4L;
 
     private final DocumentRepository documentRepository;
     private final AuthorRepository authorRepository;
@@ -163,7 +166,7 @@ public class DocumentTransformer implements ITransformer {
     }
 
     private void enqueueNextItems(
-            ScrapingQueueItem item,
+            ScrapingQueueItem request,
             ScrapingResponse response,
             String internalDocumentId
     ) {
@@ -183,16 +186,73 @@ public class DocumentTransformer implements ITransformer {
                             .refId(internalDocumentId)
                             .scrapingLink(toEnqueue.getLink())
                             .createdAt(LocalDateTime.now())
-                            .createdById(item.getCreatedById())
-                            .createdByName(item.getCreatedByName())
-                            .institutionId(item.getInstitutionId())
+                            .createdById(request.getCreatedById())
+                            .createdByName(request.getCreatedByName())
+                            .institutionId(request.getInstitutionId())
                             .priority(ScrapingQueueItemType.valueOf(toEnqueue.getType()).getPriority())
-                            .provider(item.getProvider())
+                            .provider(request.getProvider())
                             .build()
             );
         }
 
+        enqueueCoauthorsIfAny(request, response);
+
         scrapingQueueItemsRepository.saveAll(toSave);
+    }
+
+    private void enqueueCoauthorsIfAny(ScrapingQueueItem request, ScrapingResponse response) {
+        try {
+            DocumentPayload payload = null;
+            try {
+                payload = objectMapper.readValue(response.getData(), DocumentPayload.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+            var coAuthorsToEnqueue = new ArrayList<ScrapingQueueItem>();
+            for (var coAuthor : payload.getCoAuthorsNames()) {
+                try {
+                    String firstName = coAuthor.split(" ")[0];
+                    String lastName = coAuthor.split(" ")[1];
+
+                    ScrapingQueueItemType type = request.getProvider() == DataSourceType.DBLP
+                            ? ScrapingQueueItemType.FIND_AUTHOR_DBLP
+                            : ScrapingQueueItemType.FIND_AUTHOR;
+
+                    var payloadJson = new Gson().toJson(new FindAuthorPayload(firstName, lastName));
+
+                    boolean existsByName = !authorRepository.findExistingByName(firstName + " " + lastName,
+                            THRESHOLD_LEVENSHTEIN_DOCUMENTS_COAUTHORS).isEmpty();
+
+                    boolean alreadyEnqueued = scrapingQueueItemsRepository.findByPayload(payloadJson)
+                            .size() > 0;
+
+                    if (existsByName || alreadyEnqueued) {
+                        log.info("Author already exists enqueued = {}, existsByName = {}", alreadyEnqueued, existsByName);
+                        continue;
+                    }
+
+                    var enqueueCoAuthor = ScrapingQueueItem.builder()
+                            .type(type)
+                            .priority(type.getPriority())
+                            .payload(payloadJson)
+                            .createdById(request.getCreatedById())
+                            .provider(request.getProvider())
+                            .institutionId(request.getInstitutionId())
+                            .createdByName(request.getCreatedByName())
+                            .createdAt(LocalDateTime.now())
+                            .refId(UUID.randomUUID().toString())
+                            .build();
+
+                    coAuthorsToEnqueue.add(enqueueCoAuthor);
+                } catch (Exception ex) {
+                    log.warn("Coauthor problem {}", coAuthor, ex);
+                }
+            }
+            scrapingQueueItemsRepository.saveAll(coAuthorsToEnqueue);
+        } catch (Exception ex) {
+            log.error("COULD NOT SAVE AUTHOR", ex);
+        }
     }
 
     private void linkAuthorToDocument(Document document, Author author) {

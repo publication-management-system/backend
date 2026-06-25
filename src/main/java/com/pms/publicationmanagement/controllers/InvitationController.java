@@ -22,8 +22,8 @@ public class InvitationController {
 
     @PostMapping
     @Operation(security = {@SecurityRequirement(name = "SwaggerAuthentication")})
-    public void addInvitation(@RequestBody AddInvitationDto addInvitationDto) {
-        invitationService.sendInvitation(addInvitationDto);
+    public InvitationDto addInvitation(@RequestBody AddInvitationDto addInvitationDto) {
+        return invitationService.sendInvitation(addInvitationDto);
     }
 
     @GetMapping("/{id}")
