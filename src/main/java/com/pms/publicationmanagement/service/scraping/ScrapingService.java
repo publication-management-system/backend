@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -40,7 +39,7 @@ import java.util.UUID;
 @Slf4j
 public class ScrapingService {
 
-    private static final Long MAX_AUTHORS_IN_QUEUE = 1L;
+    private static final Long MAX_AUTHORS_IN_QUEUE = 3L;
 
     @Value("${scraping.service.run-api-path}")
     private String scrapingRunApiPath;
@@ -55,7 +54,7 @@ public class ScrapingService {
 
 
     @Scheduled(fixedRate = 60000)
-    public void runDocumentTasks() {
+    public void runScrapingActions() {
         var enqueuedTasksByPriorityPaged = PageRequest
                 .of(0, 30, Sort.by("priority").ascending());
 
